@@ -1,0 +1,114 @@
+# Sistema de Venta de Autos
+
+Aplicación de escritorio en C# / Windows Forms (.NET 8) para la gestión de venta de
+vehículos, con persistencia en SQL Server. Desarrollada en arquitectura de 4 capas
+(Domain / DAL / BLL / Servicios) + UI, siguiendo los lineamientos técnicos de la
+"Carpeta de Proyecto" (apartado T00 — Aspectos técnicos del sistema).
+
+## Estructura del repositorio
+
+```
+database/
+  01_schema.sql           Creación de la base de datos y todas las tablas
+  02_seed.sql              Roles, permisos (árbol Composite), idiomas/traducciones, usuario admin
+  03_datos_prueba.sql      Vehículos de ejemplo (opcional)
+
+src/
+  AutoVentas.sln
+  AutoVentas.Domain/       Entidades, excepciones de dominio, patrón Composite de permisos
+  AutoVentas.DAL/          Acceso a datos ADO.NET puro (Microsoft.Data.SqlClient), sin ORM
+  AutoVentas.BLL/          Reglas de negocio por gestión (Vehículos, Clientes, Contratos, etc.)
+  AutoVentas.Services/     Servicios transversales: seguridad, idioma, bitácora, backup, integridad
+  AutoVentas.UI/           Windows Forms (MDI por rol)
+```
+
+## Puesta en marcha
+
+### 1. Base de datos
+
+Con SQL Server (o SQL Server Express) instalado, ejecutar en orden, con SQLCMD o SSMS:
+
+```
+database/01_schema.sql
+database/02_seed.sql
+database/03_datos_prueba.sql   (opcional, agrega vehículos de ejemplo)
+```
+
+Esto crea la base `AutoVentasDB`, sus tablas, los roles/permisos por defecto, las
+traducciones (español/inglés/portugués/francés) y un usuario **Ejecutivo** inicial:
+
+- Usuario: `admin`
+- Contraseña: `Admin123!`
+
+### 2. Cadena de conexión
+
+Editar `src/AutoVentas.UI/App.config` si el servidor no es `localhost\SQLEXPRESS`:
+
+```xml
+<connectionStrings>
+  <add name="AutoVentasDB"
+       connectionString="Server=TU_SERVIDOR;Database=AutoVentasDB;Trusted_Connection=True;TrustServerCertificate=True;" />
+</connectionStrings>
+```
+
+### 3. Compilar y ejecutar
+
+Requiere Windows y .NET 8 SDK (con el workload de Windows Desktop):
+
+```
+cd src
+dotnet build AutoVentas.sln
+dotnet run --project AutoVentas.UI
+```
+
+> Nota: este proyecto usa Windows Forms, por lo que solo compila y corre en Windows.
+> No pudo compilarse ni ejecutarse dentro de este entorno de desarrollo (Linux, sin
+> SDK de .NET ni WinForms), por lo que el código fue escrito y revisado manualmente
+> siguiendo las convenciones del lenguaje; se recomienda compilarlo en un entorno
+> Windows antes de la entrega para corregir cualquier detalle de sintaxis.
+
+## Roles y menús
+
+| Rol        | Menú (formularios MDI)                                                        |
+|------------|---------------------------------------------------------------------------------|
+| Ejecutivo  | Contratos, Reservas, Pagos, Entregas, Reportes, Bitácora, Permisos, Backup       |
+| Vendedor   | Presupuestos, Vehículos, Clientes                                               |
+| Técnico    | Mantenimientos                                                                  |
+| Cliente    | Catálogo de vehículos (solo lectura + reservar), Mis reservas (crear/listar)     |
+
+Todo usuario, sin importar su rol, ingresa primero a **Login** → **Formulario
+principal** (con un botón "Ir a mi menú") → menú MDI correspondiente a su rol.
+Desde Login también se puede acceder a **Registro** de un nuevo usuario.
+
+## Mapeo de requisitos técnicos (T00 de la carpeta de proyecto)
+
+| Ítem | Descripción | Dónde está implementado |
+|------|-------------|--------------------------|
+| T01 | Arquitectura de 4 capas + MDI | `AutoVentas.Domain/DAL/BLL/Services` + `FormMenuRolBase` (MDI) |
+| T02 | Login/Logout — patrón Singleton | `Services/Seguridad/SesionActual.cs`, `BLL/GestorAutenticacion.cs` |
+| T03 | Encriptado (hash de claves + AES para datos sensibles) | `Services/Seguridad/ServicioCriptografia.cs` |
+| T04 | Perfiles de usuario — patrón Composite + TreeView recursivo | `Domain/Permisos/PermisoComponente.cs`, `Services/Permisos/ServicioPermisos.cs`, `UI/Formularios/Ejecutivo/FrmPermisos.cs` |
+| T05 | Múltiples idiomas — patrón Observer, sin .resx estáticos | `Services/Idioma/GestorIdioma.cs`, tabla `Traducciones` |
+| T06a | Bitácora | `Services/Bitacora/ServicioBitacora.cs`, `UI/Formularios/Ejecutivo/FrmBitacora.cs` |
+| T06b | Control de cambios (auditoría) | `Services/Bitacora/ServicioControlCambios.cs` |
+| T07 | Backup | `Services/Backup/ServicioBackup.cs`, `UI/Formularios/Ejecutivo/FrmBackup.cs` |
+| T08 | Dígitos verificadores horizontal/vertical | `Services/Integridad/ServicioDigitoVerificador.cs` (se ejecuta al arrancar, antes del login) |
+| — | Gestión de excepciones + serialización | `Services/Excepciones/ServicioManejoExcepciones.cs` (serializa a XML en `Logs/`) |
+
+## Modelo de datos
+
+Ver `database/01_schema.sql`. Tablas de negocio: `Usuarios`, `Roles`, `Clientes`,
+`Vehiculos`, `Mantenimientos`, `Presupuestos`, `Contratos`, `Reservas`, `Pagos`,
+`Entregas`, `Reportes`. Tablas técnicas: `Permisos`, `RolPermisos`, `Bitacora`,
+`ControlCambios`, `Idiomas`, `Traducciones`, `Backups`, `DigitosVerticales`.
+
+## Limitaciones conocidas / próximos pasos
+
+- No se generó instalador (A01) ni exportación a PDF (A02): no fueron pedidos en el
+  alcance funcional acordado para esta iteración.
+- El código no pudo compilarse en este entorno (no hay Windows ni .NET SDK
+  disponibles). Antes de la entrega final, abrir la solución en Visual Studio /
+  `dotnet build` en Windows y corregir cualquier error de compilación remanente.
+- La clave de encriptación simétrica (`ServicioCriptografia.ClaveAes`) usa un valor
+  por defecto embebido en el código a modo demostrativo; en un despliegue real debería
+  administrarse con un mecanismo externo (por ejemplo, DPAPI o un key vault).

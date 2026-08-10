@@ -1,0 +1,126 @@
+using AutoVentas.BLL;
+using AutoVentas.Domain.Entidades;
+using AutoVentas.Services.Idioma;
+using AutoVentas.Services.Seguridad;
+using AutoVentas.UI.Formularios.Comunes;
+
+namespace AutoVentas.UI.Formularios.Ejecutivo;
+
+/// <summary>Gestión de Pagos (Ejecutivo).</summary>
+public class FrmPagos : FormListadoBase<Pago>
+{
+    private readonly GestorPagos _gestor = new();
+
+    protected override string ClaveTituloIdioma => "menu.pagos";
+
+    protected override void ConfigurarColumnas(DataGridView g)
+    {
+        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Pago.IdPago), HeaderText = "Id", Width = 50 });
+        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Pago.ContratoDescripcion), HeaderText = "Contrato" });
+        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Pago.Monto), HeaderText = "Monto" });
+        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Pago.FechaPago), HeaderText = "Fecha" });
+        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Pago.MetodoPago), HeaderText = "Método" });
+    }
+
+    protected override List<Pago> ObtenerDatos() => _gestor.ObtenerTodos();
+
+    protected override void AbrirAlta()
+    {
+        using var frm = new FrmPagoEditar(null);
+        frm.ShowDialog(this);
+    }
+
+    protected override void AbrirEdicion(Pago seleccionado)
+    {
+        using var frm = new FrmPagoEditar(seleccionado);
+        frm.ShowDialog(this);
+    }
+
+    protected override void Eliminar(Pago seleccionado) => _gestor.Eliminar(seleccionado.IdPago);
+}
+
+internal class FrmPagoEditar : Form, IObservadorIdioma
+{
+    private static readonly string[] MetodosPago = { "Efectivo", "Transferencia", "Tarjeta de crédito", "Tarjeta de débito", "Cheque" };
+
+    private readonly GestorPagos _gestor = new();
+    private readonly Pago? _original;
+
+    private readonly Label _lblContrato = new() { Left = 20, Top = 20, Width = 100 };
+    private readonly ComboBox _cmbContrato = new() { Left = 130, Top = 17, Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
+    private readonly Label _lblMonto = new() { Left = 20, Top = 55, Width = 100 };
+    private readonly NumericUpDown _numMonto = new() { Left = 130, Top = 52, Width = 150, Maximum = 100_000_000, DecimalPlaces = 2 };
+    private readonly Label _lblMetodo = new() { Left = 20, Top = 90, Width = 100 };
+    private readonly ComboBox _cmbMetodo = new() { Left = 130, Top = 87, Width = 220, DropDownStyle = ComboBoxStyle.DropDownList };
+    private readonly Button _btnGuardar = new() { Left = 130, Top = 130, Width = 90 };
+    private readonly Button _btnCancelar = new() { Left = 230, Top = 130, Width = 90 };
+
+    public FrmPagoEditar(Pago? pago)
+    {
+        _original = pago;
+        Width = 400;
+        Height = 220;
+        FormBorderStyle = FormBorderStyle.FixedDialog;
+        StartPosition = FormStartPosition.CenterParent;
+        MaximizeBox = false;
+        MinimizeBox = false;
+
+        Controls.AddRange(new Control[] { _lblContrato, _cmbContrato, _lblMonto, _numMonto, _lblMetodo, _cmbMetodo, _btnGuardar, _btnCancelar });
+
+        _cmbContrato.Items.AddRange(new GestorContratos().ObtenerTodos().Cast<object>().ToArray());
+        _cmbMetodo.Items.AddRange(MetodosPago);
+
+        if (pago is not null)
+        {
+            _cmbContrato.SelectedItem = _cmbContrato.Items.Cast<Contrato>().FirstOrDefault(c => c.IdContrato == pago.IdContrato);
+            _numMonto.Value = Math.Clamp(pago.Monto, _numMonto.Minimum, _numMonto.Maximum);
+            _cmbMetodo.SelectedItem = pago.MetodoPago;
+        }
+
+        _btnGuardar.Click += BtnGuardar_Click;
+        _btnCancelar.Click += (_, _) => { DialogResult = DialogResult.Cancel; Close(); };
+
+        GestorIdioma.Instancia.Suscribir(this);
+        FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
+        ActualizarIdioma();
+    }
+
+    private void BtnGuardar_Click(object? sender, EventArgs e)
+    {
+        if (_cmbContrato.SelectedItem is not Contrato contrato || _cmbMetodo.SelectedItem is not string metodo)
+        {
+            MessageBox.Show(this, GestorIdioma.Instancia.Traducir("msg.completetodosloscampos"), "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        try
+        {
+            var usuario = SesionActual.Instancia.UsuarioLogueado!;
+            var pago = _original ?? new Pago { FechaPago = DateTime.Now, IdUsuarioEjecutivo = usuario.IdUsuario };
+            pago.IdContrato = contrato.IdContrato;
+            pago.Monto = _numMonto.Value;
+            pago.MetodoPago = metodo;
+
+            if (_original is null) _gestor.Agregar(pago);
+            else _gestor.Modificar(pago);
+
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+    }
+
+    public void ActualizarIdioma()
+    {
+        var t = GestorIdioma.Instancia;
+        Text = t.Traducir("menu.pagos");
+        _lblContrato.Text = t.Traducir("menu.contratos");
+        _lblMonto.Text = t.Traducir("lbl.monto");
+        _lblMetodo.Text = t.Traducir("lbl.metodopago");
+        _btnGuardar.Text = t.Traducir("btn.guardar");
+        _btnCancelar.Text = t.Traducir("btn.cancelar");
+    }
+}
