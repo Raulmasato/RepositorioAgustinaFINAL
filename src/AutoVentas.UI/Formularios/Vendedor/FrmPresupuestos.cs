@@ -72,28 +72,35 @@ internal class FrmPresupuestoEditar : Form, IObservadorIdioma
             _lblEstado, _cmbEstado, _btnGuardar, _btnCancelar
         });
 
-        _cmbVehiculo.Items.AddRange(new GestorVehiculos().ObtenerTodos().Cast<object>().ToArray());
-        _cmbCliente.Items.AddRange(new GestorClientes().ObtenerTodos().Cast<object>().ToArray());
         _cmbEstado.Items.AddRange(Enum.GetValues<EstadoPresupuesto>().Cast<object>().ToArray());
-
-        if (presupuesto is not null)
-        {
-            _cmbVehiculo.SelectedItem = _cmbVehiculo.Items.Cast<Vehiculo>().FirstOrDefault(v => v.IdVehiculo == presupuesto.IdVehiculo);
-            _cmbCliente.SelectedItem = _cmbCliente.Items.Cast<Cliente>().FirstOrDefault(c => c.IdCliente == presupuesto.IdCliente);
-            _numMonto.Value = Math.Clamp(presupuesto.Monto, _numMonto.Minimum, _numMonto.Maximum);
-            _cmbEstado.SelectedItem = presupuesto.Estado;
-        }
-        else
-        {
-            _cmbEstado.SelectedItem = EstadoPresupuesto.Pendiente;
-        }
+        _numMonto.Value = presupuesto is not null ? Math.Clamp(presupuesto.Monto, _numMonto.Minimum, _numMonto.Maximum) : 0;
+        _cmbEstado.SelectedItem = presupuesto?.Estado ?? EstadoPresupuesto.Pendiente;
 
         _btnGuardar.Click += BtnGuardar_Click;
         _btnCancelar.Click += (_, _) => { DialogResult = DialogResult.Cancel; Close(); };
 
         GestorIdioma.Instancia.Suscribir(this);
         FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
-        ActualizarIdioma();
+
+        // Las consultas a la base de datos se difieren a Load (y no van en el constructor)
+        // para que el diseñador de Visual Studio pueda instanciar este formulario sin conexión.
+        Load += (_, _) =>
+        {
+            CargarCombosDependientesDeBD();
+            ActualizarIdioma();
+        };
+    }
+
+    private void CargarCombosDependientesDeBD()
+    {
+        _cmbVehiculo.Items.AddRange(new GestorVehiculos().ObtenerTodos().Cast<object>().ToArray());
+        _cmbCliente.Items.AddRange(new GestorClientes().ObtenerTodos().Cast<object>().ToArray());
+
+        if (_original is not null)
+        {
+            _cmbVehiculo.SelectedItem = _cmbVehiculo.Items.Cast<Vehiculo>().FirstOrDefault(v => v.IdVehiculo == _original.IdVehiculo);
+            _cmbCliente.SelectedItem = _cmbCliente.Items.Cast<Cliente>().FirstOrDefault(c => c.IdCliente == _original.IdCliente);
+        }
     }
 
     private void BtnGuardar_Click(object? sender, EventArgs e)

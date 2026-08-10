@@ -77,7 +77,6 @@ internal class FrmReservaEditar : Form, IObservadorIdioma
             _lblEstado, _cmbEstado, _btnGuardar, _btnCancelar
         });
 
-        _cmbVehiculo.Items.AddRange(new GestorVehiculos().ObtenerDisponibles().Cast<object>().ToArray());
         _cmbEstado.Items.AddRange(Enum.GetValues<EstadoReserva>().Cast<object>().ToArray());
 
         if (clienteFijo is not null)
@@ -87,20 +86,9 @@ internal class FrmReservaEditar : Form, IObservadorIdioma
             _cmbCliente.Enabled = false;
             _cmbEstado.Enabled = false; // el cliente crea la reserva como Pendiente, la confirma el ejecutivo
         }
-        else
-        {
-            _cmbCliente.Items.AddRange(new GestorClientes().ObtenerTodos().Cast<object>().ToArray());
-        }
 
         if (reserva is not null)
         {
-            _cmbVehiculo.Items.Clear();
-            _cmbVehiculo.Items.AddRange(new GestorVehiculos().ObtenerTodos().Cast<object>().ToArray());
-            _cmbVehiculo.SelectedItem = _cmbVehiculo.Items.Cast<Vehiculo>().FirstOrDefault(v => v.IdVehiculo == reserva.IdVehiculo);
-            if (clienteFijo is null)
-            {
-                _cmbCliente.SelectedItem = _cmbCliente.Items.Cast<Cliente>().FirstOrDefault(c => c.IdCliente == reserva.IdCliente);
-            }
             _dtpVencimiento.Value = reserva.FechaVencimiento;
             _cmbEstado.SelectedItem = reserva.Estado;
         }
@@ -114,7 +102,35 @@ internal class FrmReservaEditar : Form, IObservadorIdioma
 
         GestorIdioma.Instancia.Suscribir(this);
         FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
-        ActualizarIdioma();
+
+        // Diferido a Load: el diseñador de Visual Studio no debe ejecutar consultas a la BD
+        // al instanciar este formulario para dibujarlo.
+        Load += (_, _) =>
+        {
+            CargarCombosDependientesDeBD();
+            ActualizarIdioma();
+        };
+    }
+
+    private void CargarCombosDependientesDeBD()
+    {
+        _cmbVehiculo.Items.AddRange(new GestorVehiculos().ObtenerDisponibles().Cast<object>().ToArray());
+
+        if (_clienteFijo is null)
+        {
+            _cmbCliente.Items.AddRange(new GestorClientes().ObtenerTodos().Cast<object>().ToArray());
+        }
+
+        if (_original is not null)
+        {
+            _cmbVehiculo.Items.Clear();
+            _cmbVehiculo.Items.AddRange(new GestorVehiculos().ObtenerTodos().Cast<object>().ToArray());
+            _cmbVehiculo.SelectedItem = _cmbVehiculo.Items.Cast<Vehiculo>().FirstOrDefault(v => v.IdVehiculo == _original.IdVehiculo);
+            if (_clienteFijo is null)
+            {
+                _cmbCliente.SelectedItem = _cmbCliente.Items.Cast<Cliente>().FirstOrDefault(c => c.IdCliente == _original.IdCliente);
+            }
+        }
     }
 
     private void BtnGuardar_Click(object? sender, EventArgs e)

@@ -70,13 +70,8 @@ internal class FrmMantenimientoEditar : Form, IObservadorIdioma
             _lblFecha, _dtpFecha, _btnGuardar, _btnCancelar
         });
 
-        _cmbVehiculo.Items.AddRange(new GestorVehiculos().ObtenerTodos().Cast<object>().ToArray());
-        _cmbCliente.Items.AddRange(new GestorClientes().ObtenerTodos().Cast<object>().ToArray());
-
         if (mantenimiento is not null)
         {
-            _cmbVehiculo.SelectedItem = _cmbVehiculo.Items.Cast<Vehiculo>().FirstOrDefault(v => v.IdVehiculo == mantenimiento.IdVehiculo);
-            _cmbCliente.SelectedItem = _cmbCliente.Items.Cast<Cliente>().FirstOrDefault(c => c.IdCliente == mantenimiento.IdCliente);
             _txtServicio.Text = mantenimiento.Servicio;
             _dtpFecha.Value = mantenimiento.FechaServicio;
         }
@@ -86,7 +81,26 @@ internal class FrmMantenimientoEditar : Form, IObservadorIdioma
 
         GestorIdioma.Instancia.Suscribir(this);
         FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
-        ActualizarIdioma();
+
+        // Diferido a Load: el diseñador de Visual Studio no debe ejecutar consultas a la BD
+        // al instanciar este formulario para dibujarlo.
+        Load += (_, _) =>
+        {
+            CargarCombosDependientesDeBD();
+            ActualizarIdioma();
+        };
+    }
+
+    private void CargarCombosDependientesDeBD()
+    {
+        _cmbVehiculo.Items.AddRange(new GestorVehiculos().ObtenerTodos().Cast<object>().ToArray());
+        _cmbCliente.Items.AddRange(new GestorClientes().ObtenerTodos().Cast<object>().ToArray());
+
+        if (_original is not null)
+        {
+            _cmbVehiculo.SelectedItem = _cmbVehiculo.Items.Cast<Vehiculo>().FirstOrDefault(v => v.IdVehiculo == _original.IdVehiculo);
+            _cmbCliente.SelectedItem = _cmbCliente.Items.Cast<Cliente>().FirstOrDefault(c => c.IdCliente == _original.IdCliente);
+        }
     }
 
     private void BtnGuardar_Click(object? sender, EventArgs e)

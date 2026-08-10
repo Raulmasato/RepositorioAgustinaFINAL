@@ -67,12 +67,10 @@ internal class FrmPagoEditar : Form, IObservadorIdioma
 
         Controls.AddRange(new Control[] { _lblContrato, _cmbContrato, _lblMonto, _numMonto, _lblMetodo, _cmbMetodo, _btnGuardar, _btnCancelar });
 
-        _cmbContrato.Items.AddRange(new GestorContratos().ObtenerTodos().Cast<object>().ToArray());
         _cmbMetodo.Items.AddRange(MetodosPago);
 
         if (pago is not null)
         {
-            _cmbContrato.SelectedItem = _cmbContrato.Items.Cast<Contrato>().FirstOrDefault(c => c.IdContrato == pago.IdContrato);
             _numMonto.Value = Math.Clamp(pago.Monto, _numMonto.Minimum, _numMonto.Maximum);
             _cmbMetodo.SelectedItem = pago.MetodoPago;
         }
@@ -82,7 +80,24 @@ internal class FrmPagoEditar : Form, IObservadorIdioma
 
         GestorIdioma.Instancia.Suscribir(this);
         FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
-        ActualizarIdioma();
+
+        // Diferido a Load: el diseñador de Visual Studio no debe ejecutar consultas a la BD
+        // al instanciar este formulario para dibujarlo.
+        Load += (_, _) =>
+        {
+            CargarCombosDependientesDeBD();
+            ActualizarIdioma();
+        };
+    }
+
+    private void CargarCombosDependientesDeBD()
+    {
+        _cmbContrato.Items.AddRange(new GestorContratos().ObtenerTodos().Cast<object>().ToArray());
+
+        if (_original is not null)
+        {
+            _cmbContrato.SelectedItem = _cmbContrato.Items.Cast<Contrato>().FirstOrDefault(c => c.IdContrato == _original.IdContrato);
+        }
     }
 
     private void BtnGuardar_Click(object? sender, EventArgs e)

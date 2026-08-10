@@ -35,15 +35,17 @@ public class FrmPermisos : Form, IObservadorIdioma
         Controls.Add(_btnGuardar);
         Controls.Add(_panelSuperior);
 
-        _cmbRol.Items.AddRange(_repositorioRoles.ObtenerTodos().Cast<object>().ToArray());
         _cmbRol.DisplayMember = nameof(Rol.Nombre);
         _cmbRol.SelectedIndexChanged += (_, _) => CargarArbolParaRolSeleccionado();
 
         _arbol.AfterCheck += Arbol_AfterCheck;
         _btnGuardar.Click += (_, _) => GuardarCambios();
 
+        // Diferido a Load: el diseñador de Visual Studio no debe ejecutar consultas a la BD
+        // al instanciar este formulario para dibujarlo.
         Load += (_, _) =>
         {
+            _cmbRol.Items.AddRange(_repositorioRoles.ObtenerTodos().Cast<object>().ToArray());
             GestorIdioma.Instancia.Suscribir(this);
             ActualizarIdioma();
             if (_cmbRol.Items.Count > 0) _cmbRol.SelectedIndex = 0;
