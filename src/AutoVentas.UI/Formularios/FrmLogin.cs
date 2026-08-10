@@ -31,6 +31,16 @@ public class FrmLogin : Form, IObservadorIdioma
             _lblUsuario, _txtUsuario, _lblClave, _txtClave, _btnIngresar, _btnRegistrarse, _selectorIdioma
         });
 
+        // --- DIAGNÓSTICO TEMPORAL: sacar este bloque una vez resuelto el problema de visualización ---
+        MessageBox.Show(
+            $"Controles agregados a esta ventana: {Controls.Count}" + Environment.NewLine +
+            $"Tamaño ventana: {Width}x{Height}" + Environment.NewLine +
+            $".NET en ejecución: {Environment.Version}" + Environment.NewLine +
+            $"Modo alto DPI: {Application.HighDpiMode}" + Environment.NewLine +
+            $"Ruta del ejecutable: {Environment.ProcessPath}",
+            "DIAGNÓSTICO", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        // --- FIN DIAGNÓSTICO TEMPORAL ---
+
         _btnIngresar.Click += BtnIngresar_Click;
         _btnRegistrarse.Click += BtnRegistrarse_Click;
         AcceptButton = _btnIngresar;
