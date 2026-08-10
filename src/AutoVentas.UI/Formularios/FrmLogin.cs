@@ -1,4 +1,5 @@
 using AutoVentas.BLL;
+using AutoVentas.Domain.Entidades;
 using AutoVentas.Domain.Excepciones;
 using AutoVentas.Services.Idioma;
 using AutoVentas.UI.Formularios.Comunes;
@@ -15,6 +16,7 @@ public class FrmLogin : Form, IObservadorIdioma
     private readonly Button _btnIngresar = new() { Left = 140, Top = 115, Width = 95 };
     private readonly Button _btnRegistrarse = new() { Left = 245, Top = 115, Width = 95 };
     private readonly SelectorIdioma _selectorIdioma = new() { Left = 140, Top = 155, Width = 200 };
+    private readonly Button _btnTraducir = new() { Left = 345, Top = 153, Width = 65 };
     private readonly GestorAutenticacion _gestorAutenticacion = new();
 
     public FrmLogin()
@@ -28,7 +30,8 @@ public class FrmLogin : Form, IObservadorIdioma
 
         Controls.AddRange(new Control[]
         {
-            _lblUsuario, _txtUsuario, _lblClave, _txtClave, _btnIngresar, _btnRegistrarse, _selectorIdioma
+            _lblUsuario, _txtUsuario, _lblClave, _txtClave, _btnIngresar, _btnRegistrarse,
+            _selectorIdioma, _btnTraducir
         });
 
         // --- DIAGNÓSTICO TEMPORAL: sacar este bloque una vez resuelto el problema de visualización ---
@@ -43,6 +46,7 @@ public class FrmLogin : Form, IObservadorIdioma
 
         _btnIngresar.Click += BtnIngresar_Click;
         _btnRegistrarse.Click += BtnRegistrarse_Click;
+        _btnTraducir.Click += BtnTraducir_Click;
         AcceptButton = _btnIngresar;
 
         GestorIdioma.Instancia.Suscribir(this);
@@ -74,6 +78,24 @@ public class FrmLogin : Form, IObservadorIdioma
         }
     }
 
+    /// <summary>
+    /// T05. Al tocar "Traducir" se toma el idioma elegido en el combo y se aplica a TODO el
+    /// programa: GestorIdioma.CambiarIdioma (patrón Observer) recarga las traducciones desde
+    /// la base de datos y notifica a cada formulario suscripto (no solo a este) para que
+    /// refresque sus textos en caliente, sin necesidad de reiniciar la aplicación.
+    /// </summary>
+    private void BtnTraducir_Click(object? sender, EventArgs e)
+    {
+        if (_selectorIdioma.SelectedItem is not Idioma idiomaSeleccionado)
+        {
+            MessageBox.Show(this, GestorIdioma.Instancia.Traducir("msg.seleccioneidioma"),
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        GestorIdioma.Instancia.CambiarIdioma(idiomaSeleccionado.Codigo);
+    }
+
     public void ActualizarIdioma()
     {
         var t = GestorIdioma.Instancia;
@@ -82,5 +104,6 @@ public class FrmLogin : Form, IObservadorIdioma
         _lblClave.Text = t.Traducir("lbl.clave");
         _btnIngresar.Text = t.Traducir("btn.ingresar");
         _btnRegistrarse.Text = t.Traducir("btn.registrarse");
+        _btnTraducir.Text = t.Traducir("btn.traducir");
     }
 }

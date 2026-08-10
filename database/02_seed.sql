@@ -210,7 +210,9 @@ DECLARE @fr INT = (SELECT IdIdioma FROM Idiomas WHERE Codigo = 'fr');
         ('msg.backupgenerado', N'El backup se generó correctamente.', N'The backup was generated successfully.', N'O backup foi gerado com sucesso.', N'La sauvegarde a été générée avec succès.'),
         ('msg.confirmarrestaurar', N'¿Confirma que desea restaurar este backup? Se reemplazará la base de datos actual.', N'Confirm you want to restore this backup? The current database will be replaced.', N'Confirma que deseja restaurar este backup? O banco de dados atual será substituído.', N'Confirmez-vous la restauration de cette sauvegarde ? La base de données actuelle sera remplacée.'),
         ('msg.backuprestaurado', N'El backup se restauró correctamente.', N'The backup was restored successfully.', N'O backup foi restaurado com sucesso.', N'La sauvegarde a été restaurée avec succès.'),
-        ('msg.clientenoencontrado', N'No se encontró un cliente asociado a este usuario.', N'No customer record was found for this user.', N'Nenhum cliente associado a este usuário foi encontrado.', N'Aucun client associé à cet utilisateur n''a été trouvé.')
+        ('msg.clientenoencontrado', N'No se encontró un cliente asociado a este usuario.', N'No customer record was found for this user.', N'Nenhum cliente associado a este usuário foi encontrado.', N'Aucun client associé à cet utilisateur n''a été trouvé.'),
+        ('btn.traducir', N'Traducir', N'Translate', N'Traduzir', N'Traduire'),
+        ('msg.seleccioneidioma', N'Debe seleccionar un idioma.', N'You must select a language.', N'Selecione um idioma.', N'Vous devez sélectionner une langue.')
     ) AS t(Clave, Es, En, Pt, Fr)
 )
 INSERT INTO Traducciones (IdIdioma, Clave, Valor)
