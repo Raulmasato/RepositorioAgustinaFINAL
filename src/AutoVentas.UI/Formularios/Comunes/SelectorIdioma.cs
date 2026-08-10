@@ -1,5 +1,5 @@
-using AutoVentas.Domain.Entidades;
 using AutoVentas.Services.Idioma;
+using EntidadIdioma = AutoVentas.Domain.Entidades.Idioma;
 
 namespace AutoVentas.UI.Formularios.Comunes;
 
@@ -12,13 +12,13 @@ public class SelectorIdioma : ComboBox
     {
         DropDownStyle = ComboBoxStyle.DropDownList;
         Width = 130;
-        DisplayMember = nameof(Idioma.Nombre);
-        ValueMember = nameof(Idioma.Codigo);
+        DisplayMember = nameof(EntidadIdioma.Nombre);
+        ValueMember = nameof(EntidadIdioma.Codigo);
 
         Items.AddRange(GestorIdioma.Instancia.IdiomasDisponibles.Cast<object>().ToArray());
         SelectedIndexChanged += (_, _) =>
         {
-            if (SelectedItem is Idioma idioma)
+            if (SelectedItem is EntidadIdioma idioma)
             {
                 GestorIdioma.Instancia.CambiarIdioma(idioma.Codigo);
             }

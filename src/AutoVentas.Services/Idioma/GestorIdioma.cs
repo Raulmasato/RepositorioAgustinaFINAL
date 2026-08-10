@@ -22,7 +22,7 @@ public sealed class GestorIdioma
     private GestorIdioma() { }
 
     public string CodigoIdiomaActual { get; private set; } = "es";
-    public List<Idioma> IdiomasDisponibles { get; private set; } = new();
+    public List<AutoVentas.Domain.Entidades.Idioma> IdiomasDisponibles { get; private set; } = new();
 
     public void Inicializar(string codigoIdiomaPorDefecto = "es")
     {
