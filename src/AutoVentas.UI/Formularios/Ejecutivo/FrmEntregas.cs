@@ -7,36 +7,84 @@ using AutoVentas.UI.Formularios.Comunes;
 namespace AutoVentas.UI.Formularios.Ejecutivo;
 
 /// <summary>Gestión de Entregas (Ejecutivo). Una entrega &lt;&lt;include&gt;&gt; la gestión de pagos.</summary>
-public class FrmEntregas : FormListadoBase<Entrega>
+public class FrmEntregas : Form, IObservadorIdioma
 {
     private readonly GestorEntregas _gestor = new();
 
-    protected override string ClaveTituloIdioma => "menu.entregas";
-
-    protected override void ConfigurarColumnas(DataGridView g)
+    private readonly DataGridView _grilla = new()
     {
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Entrega.IdEntrega), HeaderText = "Id", Width = 50 });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Entrega.ContratoDescripcion), HeaderText = "Contrato" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Entrega.FechaEntrega), HeaderText = "Fecha" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Entrega.LugarEntrega), HeaderText = "Lugar" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Entrega.Estado), HeaderText = "Estado" });
+        Dock = DockStyle.Fill,
+        ReadOnly = true,
+        AllowUserToAddRows = false,
+        AllowUserToDeleteRows = false,
+        SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+        MultiSelect = false,
+        AutoGenerateColumns = false,
+        AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+    };
+
+    private readonly FlowLayoutPanel _panelBotones = new() { Dock = DockStyle.Top, Height = 42, Padding = new Padding(6) };
+    private readonly Button _btnNuevo = new() { AutoSize = true };
+    private readonly Button _btnEditar = new() { AutoSize = true };
+    private readonly Button _btnEliminar = new() { AutoSize = true };
+    private readonly Button _btnRefrescar = new() { AutoSize = true };
+    private readonly ControladorListadoCrud<Entrega> _controlador;
+
+    public FrmEntregas()
+    {
+        Width = 820;
+        Height = 500;
+        StartPosition = FormStartPosition.CenterParent;
+
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Entrega.IdEntrega), HeaderText = "Id", Width = 50 });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Entrega.ContratoDescripcion), HeaderText = "Contrato" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Entrega.FechaEntrega), HeaderText = "Fecha" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Entrega.LugarEntrega), HeaderText = "Lugar" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Entrega.Estado), HeaderText = "Estado" });
+
+        _panelBotones.Controls.AddRange(new Control[] { _btnNuevo, _btnEditar, _btnEliminar, _btnRefrescar });
+        Controls.Add(_grilla);
+        Controls.Add(_panelBotones);
+
+        _controlador = new ControladorListadoCrud<Entrega>(
+            this, _grilla, () => _gestor.ObtenerTodos(),
+            AbrirAlta, AbrirEdicion, e => _gestor.Eliminar(e.IdEntrega));
+
+        _btnNuevo.Click += (_, _) => _controlador.Nuevo();
+        _btnEditar.Click += (_, _) => _controlador.Editar();
+        _btnEliminar.Click += (_, _) => _controlador.EliminarSeleccionado();
+        _btnRefrescar.Click += (_, _) => _controlador.Refrescar();
+
+        Load += (_, _) =>
+        {
+            GestorIdioma.Instancia.Suscribir(this);
+            ActualizarIdioma();
+            _controlador.Refrescar();
+        };
+        FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
     }
 
-    protected override List<Entrega> ObtenerDatos() => _gestor.ObtenerTodos();
-
-    protected override void AbrirAlta()
+    private void AbrirAlta()
     {
         using var frm = new FrmEntregaEditar(null);
         frm.ShowDialog(this);
     }
 
-    protected override void AbrirEdicion(Entrega seleccionado)
+    private void AbrirEdicion(Entrega seleccionado)
     {
         using var frm = new FrmEntregaEditar(seleccionado);
         frm.ShowDialog(this);
     }
 
-    protected override void Eliminar(Entrega seleccionado) => _gestor.Eliminar(seleccionado.IdEntrega);
+    public void ActualizarIdioma()
+    {
+        var t = GestorIdioma.Instancia;
+        Text = t.Traducir("menu.entregas");
+        _btnNuevo.Text = t.Traducir("btn.nuevo");
+        _btnEditar.Text = t.Traducir("btn.editar");
+        _btnEliminar.Text = t.Traducir("btn.eliminar");
+        _btnRefrescar.Text = t.Traducir("btn.refrescar");
+    }
 }
 
 internal class FrmEntregaEditar : Form, IObservadorIdioma

@@ -7,37 +7,85 @@ using AutoVentas.UI.Formularios.Comunes;
 namespace AutoVentas.UI.Formularios.Ejecutivo;
 
 /// <summary>Gestión de Contratos (Ejecutivo). Puede originarse en un Presupuesto (&lt;&lt;include&gt;&gt;).</summary>
-public class FrmContratos : FormListadoBase<Contrato>
+public class FrmContratos : Form, IObservadorIdioma
 {
     private readonly GestorContratos _gestor = new();
 
-    protected override string ClaveTituloIdioma => "menu.contratos";
-
-    protected override void ConfigurarColumnas(DataGridView g)
+    private readonly DataGridView _grilla = new()
     {
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.IdContrato), HeaderText = "Id", Width = 50 });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.VehiculoDescripcion), HeaderText = "Vehículo" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.ClienteNombreCompleto), HeaderText = "Cliente" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.FechaContrato), HeaderText = "Fecha" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.Precio), HeaderText = "Precio" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.Estado), HeaderText = "Estado" });
+        Dock = DockStyle.Fill,
+        ReadOnly = true,
+        AllowUserToAddRows = false,
+        AllowUserToDeleteRows = false,
+        SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+        MultiSelect = false,
+        AutoGenerateColumns = false,
+        AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+    };
+
+    private readonly FlowLayoutPanel _panelBotones = new() { Dock = DockStyle.Top, Height = 42, Padding = new Padding(6) };
+    private readonly Button _btnNuevo = new() { AutoSize = true };
+    private readonly Button _btnEditar = new() { AutoSize = true };
+    private readonly Button _btnEliminar = new() { AutoSize = true };
+    private readonly Button _btnRefrescar = new() { AutoSize = true };
+    private readonly ControladorListadoCrud<Contrato> _controlador;
+
+    public FrmContratos()
+    {
+        Width = 820;
+        Height = 500;
+        StartPosition = FormStartPosition.CenterParent;
+
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.IdContrato), HeaderText = "Id", Width = 50 });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.VehiculoDescripcion), HeaderText = "Vehículo" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.ClienteNombreCompleto), HeaderText = "Cliente" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.FechaContrato), HeaderText = "Fecha" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.Precio), HeaderText = "Precio" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Contrato.Estado), HeaderText = "Estado" });
+
+        _panelBotones.Controls.AddRange(new Control[] { _btnNuevo, _btnEditar, _btnEliminar, _btnRefrescar });
+        Controls.Add(_grilla);
+        Controls.Add(_panelBotones);
+
+        _controlador = new ControladorListadoCrud<Contrato>(
+            this, _grilla, () => _gestor.ObtenerTodos(),
+            AbrirAlta, AbrirEdicion, c => _gestor.Eliminar(c.IdContrato));
+
+        _btnNuevo.Click += (_, _) => _controlador.Nuevo();
+        _btnEditar.Click += (_, _) => _controlador.Editar();
+        _btnEliminar.Click += (_, _) => _controlador.EliminarSeleccionado();
+        _btnRefrescar.Click += (_, _) => _controlador.Refrescar();
+
+        Load += (_, _) =>
+        {
+            GestorIdioma.Instancia.Suscribir(this);
+            ActualizarIdioma();
+            _controlador.Refrescar();
+        };
+        FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
     }
 
-    protected override List<Contrato> ObtenerDatos() => _gestor.ObtenerTodos();
-
-    protected override void AbrirAlta()
+    private void AbrirAlta()
     {
         using var frm = new FrmContratoEditar(null);
         frm.ShowDialog(this);
     }
 
-    protected override void AbrirEdicion(Contrato seleccionado)
+    private void AbrirEdicion(Contrato seleccionado)
     {
         using var frm = new FrmContratoEditar(seleccionado);
         frm.ShowDialog(this);
     }
 
-    protected override void Eliminar(Contrato seleccionado) => _gestor.Eliminar(seleccionado.IdContrato);
+    public void ActualizarIdioma()
+    {
+        var t = GestorIdioma.Instancia;
+        Text = t.Traducir("menu.contratos");
+        _btnNuevo.Text = t.Traducir("btn.nuevo");
+        _btnEditar.Text = t.Traducir("btn.editar");
+        _btnEliminar.Text = t.Traducir("btn.eliminar");
+        _btnRefrescar.Text = t.Traducir("btn.refrescar");
+    }
 }
 
 internal class FrmContratoEditar : Form, IObservadorIdioma

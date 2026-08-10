@@ -7,37 +7,85 @@ using AutoVentas.UI.Formularios.Comunes;
 namespace AutoVentas.UI.Formularios.Vendedor;
 
 /// <summary>Gestión de Presupuestos (Vendedor). Un presupuesto aprobado puede dar origen a un Contrato.</summary>
-public class FrmPresupuestos : FormListadoBase<Presupuesto>
+public class FrmPresupuestos : Form, IObservadorIdioma
 {
     private readonly GestorPresupuestos _gestor = new();
 
-    protected override string ClaveTituloIdioma => "menu.presupuestos";
-
-    protected override void ConfigurarColumnas(DataGridView g)
+    private readonly DataGridView _grilla = new()
     {
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.IdPresupuesto), HeaderText = "Id", Width = 50 });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.VehiculoDescripcion), HeaderText = "Vehículo" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.ClienteNombreCompleto), HeaderText = "Cliente" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.FechaPresupuesto), HeaderText = "Fecha" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.Monto), HeaderText = "Monto" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.Estado), HeaderText = "Estado" });
+        Dock = DockStyle.Fill,
+        ReadOnly = true,
+        AllowUserToAddRows = false,
+        AllowUserToDeleteRows = false,
+        SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+        MultiSelect = false,
+        AutoGenerateColumns = false,
+        AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+    };
+
+    private readonly FlowLayoutPanel _panelBotones = new() { Dock = DockStyle.Top, Height = 42, Padding = new Padding(6) };
+    private readonly Button _btnNuevo = new() { AutoSize = true };
+    private readonly Button _btnEditar = new() { AutoSize = true };
+    private readonly Button _btnEliminar = new() { AutoSize = true };
+    private readonly Button _btnRefrescar = new() { AutoSize = true };
+    private readonly ControladorListadoCrud<Presupuesto> _controlador;
+
+    public FrmPresupuestos()
+    {
+        Width = 820;
+        Height = 500;
+        StartPosition = FormStartPosition.CenterParent;
+
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.IdPresupuesto), HeaderText = "Id", Width = 50 });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.VehiculoDescripcion), HeaderText = "Vehículo" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.ClienteNombreCompleto), HeaderText = "Cliente" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.FechaPresupuesto), HeaderText = "Fecha" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.Monto), HeaderText = "Monto" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Presupuesto.Estado), HeaderText = "Estado" });
+
+        _panelBotones.Controls.AddRange(new Control[] { _btnNuevo, _btnEditar, _btnEliminar, _btnRefrescar });
+        Controls.Add(_grilla);
+        Controls.Add(_panelBotones);
+
+        _controlador = new ControladorListadoCrud<Presupuesto>(
+            this, _grilla, () => _gestor.ObtenerTodos(),
+            AbrirAlta, AbrirEdicion, p => _gestor.Eliminar(p.IdPresupuesto));
+
+        _btnNuevo.Click += (_, _) => _controlador.Nuevo();
+        _btnEditar.Click += (_, _) => _controlador.Editar();
+        _btnEliminar.Click += (_, _) => _controlador.EliminarSeleccionado();
+        _btnRefrescar.Click += (_, _) => _controlador.Refrescar();
+
+        Load += (_, _) =>
+        {
+            GestorIdioma.Instancia.Suscribir(this);
+            ActualizarIdioma();
+            _controlador.Refrescar();
+        };
+        FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
     }
 
-    protected override List<Presupuesto> ObtenerDatos() => _gestor.ObtenerTodos();
-
-    protected override void AbrirAlta()
+    private void AbrirAlta()
     {
         using var frm = new FrmPresupuestoEditar(null);
         frm.ShowDialog(this);
     }
 
-    protected override void AbrirEdicion(Presupuesto seleccionado)
+    private void AbrirEdicion(Presupuesto seleccionado)
     {
         using var frm = new FrmPresupuestoEditar(seleccionado);
         frm.ShowDialog(this);
     }
 
-    protected override void Eliminar(Presupuesto seleccionado) => _gestor.Eliminar(seleccionado.IdPresupuesto);
+    public void ActualizarIdioma()
+    {
+        var t = GestorIdioma.Instancia;
+        Text = t.Traducir("menu.presupuestos");
+        _btnNuevo.Text = t.Traducir("btn.nuevo");
+        _btnEditar.Text = t.Traducir("btn.editar");
+        _btnEliminar.Text = t.Traducir("btn.eliminar");
+        _btnRefrescar.Text = t.Traducir("btn.refrescar");
+    }
 }
 
 internal class FrmPresupuestoEditar : Form, IObservadorIdioma

@@ -8,37 +8,85 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 
 /// <summary>Gestión de Reportes (Ejecutivo). El contenido se genera automáticamente a partir
 /// del tipo de reporte y el rango de fechas seleccionado.</summary>
-public class FrmReportes : FormListadoBase<Reporte>
+public class FrmReportes : Form, IObservadorIdioma
 {
     private readonly GestorReportes _gestor = new();
 
-    protected override string ClaveTituloIdioma => "menu.reportes";
-
-    protected override void ConfigurarColumnas(DataGridView g)
+    private readonly DataGridView _grilla = new()
     {
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.IdReporte), HeaderText = "Id", Width = 50 });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.Titulo), HeaderText = "Título" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.TipoReporte), HeaderText = "Tipo" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.FechaDesde), HeaderText = "Desde" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.FechaHasta), HeaderText = "Hasta" });
-        g.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.FechaGeneracion), HeaderText = "Generado" });
+        Dock = DockStyle.Fill,
+        ReadOnly = true,
+        AllowUserToAddRows = false,
+        AllowUserToDeleteRows = false,
+        SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+        MultiSelect = false,
+        AutoGenerateColumns = false,
+        AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
+    };
+
+    private readonly FlowLayoutPanel _panelBotones = new() { Dock = DockStyle.Top, Height = 42, Padding = new Padding(6) };
+    private readonly Button _btnNuevo = new() { AutoSize = true };
+    private readonly Button _btnEditar = new() { AutoSize = true };
+    private readonly Button _btnEliminar = new() { AutoSize = true };
+    private readonly Button _btnRefrescar = new() { AutoSize = true };
+    private readonly ControladorListadoCrud<Reporte> _controlador;
+
+    public FrmReportes()
+    {
+        Width = 820;
+        Height = 500;
+        StartPosition = FormStartPosition.CenterParent;
+
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.IdReporte), HeaderText = "Id", Width = 50 });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.Titulo), HeaderText = "Título" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.TipoReporte), HeaderText = "Tipo" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.FechaDesde), HeaderText = "Desde" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.FechaHasta), HeaderText = "Hasta" });
+        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.FechaGeneracion), HeaderText = "Generado" });
+
+        _panelBotones.Controls.AddRange(new Control[] { _btnNuevo, _btnEditar, _btnEliminar, _btnRefrescar });
+        Controls.Add(_grilla);
+        Controls.Add(_panelBotones);
+
+        _controlador = new ControladorListadoCrud<Reporte>(
+            this, _grilla, () => _gestor.ObtenerTodos(),
+            AbrirAlta, AbrirEdicion, r => _gestor.Eliminar(r.IdReporte));
+
+        _btnNuevo.Click += (_, _) => _controlador.Nuevo();
+        _btnEditar.Click += (_, _) => _controlador.Editar();
+        _btnEliminar.Click += (_, _) => _controlador.EliminarSeleccionado();
+        _btnRefrescar.Click += (_, _) => _controlador.Refrescar();
+
+        Load += (_, _) =>
+        {
+            GestorIdioma.Instancia.Suscribir(this);
+            ActualizarIdioma();
+            _controlador.Refrescar();
+        };
+        FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
     }
 
-    protected override List<Reporte> ObtenerDatos() => _gestor.ObtenerTodos();
-
-    protected override void AbrirAlta()
+    private void AbrirAlta()
     {
         using var frm = new FrmReporteEditar(null);
         frm.ShowDialog(this);
     }
 
-    protected override void AbrirEdicion(Reporte seleccionado)
+    private void AbrirEdicion(Reporte seleccionado)
     {
         using var frm = new FrmReporteEditar(seleccionado);
         frm.ShowDialog(this);
     }
 
-    protected override void Eliminar(Reporte seleccionado) => _gestor.Eliminar(seleccionado.IdReporte);
+    public void ActualizarIdioma()
+    {
+        var t = GestorIdioma.Instancia;
+        Text = t.Traducir("menu.reportes");
+        _btnNuevo.Text = t.Traducir("btn.nuevo");
+        _btnEditar.Text = t.Traducir("btn.editar");
+        _btnEliminar.Text = t.Traducir("btn.eliminar");
+        _btnRefrescar.Text = t.Traducir("btn.refrescar");
+    }
 }
 
 internal class FrmReporteEditar : Form, IObservadorIdioma
