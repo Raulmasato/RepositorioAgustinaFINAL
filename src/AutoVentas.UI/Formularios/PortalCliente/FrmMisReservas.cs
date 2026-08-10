@@ -3,7 +3,7 @@ using AutoVentas.Domain.Entidades;
 using AutoVentas.Services.Idioma;
 using AutoVentas.Services.Seguridad;
 
-namespace AutoVentas.UI.Formularios.Cliente;
+namespace AutoVentas.UI.Formularios.PortalCliente;
 
 /// <summary>
 /// "Crear reserva" desde la óptica del Cliente: solo puede crear y listar sus propias

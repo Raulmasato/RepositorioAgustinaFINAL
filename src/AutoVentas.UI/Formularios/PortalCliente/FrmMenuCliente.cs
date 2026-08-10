@@ -1,6 +1,6 @@
 using AutoVentas.UI.Formularios.Comunes;
 
-namespace AutoVentas.UI.Formularios.Cliente;
+namespace AutoVentas.UI.Formularios.PortalCliente;
 
 /// <summary>Menú MDI del rol Cliente: catálogo de vehículos y sus propias reservas.</summary>
 public class FrmMenuCliente : FormMenuRolBase

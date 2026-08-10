@@ -3,7 +3,7 @@ using AutoVentas.Domain.Entidades;
 using AutoVentas.Services.Idioma;
 using AutoVentas.Services.Seguridad;
 
-namespace AutoVentas.UI.Formularios.Cliente;
+namespace AutoVentas.UI.Formularios.PortalCliente;
 
 /// <summary>Catálogo de vehículos disponibles, de solo lectura, visible para el rol Cliente.
 /// Desde acá el cliente puede iniciar una reserva sobre el vehículo seleccionado.</summary>

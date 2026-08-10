@@ -2,7 +2,7 @@ using AutoVentas.BLL;
 using AutoVentas.Domain.Entidades;
 using AutoVentas.Services.Idioma;
 using AutoVentas.Services.Seguridad;
-using AutoVentas.UI.Formularios.Cliente;
+using AutoVentas.UI.Formularios.PortalCliente;
 using AutoVentas.UI.Formularios.Comunes;
 using AutoVentas.UI.Formularios.Ejecutivo;
 using AutoVentas.UI.Formularios.Tecnico;
