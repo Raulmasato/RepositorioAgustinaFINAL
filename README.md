@@ -13,16 +13,27 @@ database/
   02_seed.sql              Roles, permisos (árbol Composite), idiomas/traducciones, usuario admin
   03_datos_prueba.sql      Vehículos de ejemplo (opcional)
 
+instalador/
+  Instalar.ps1             A01 — instalador automático (ver docs/Manual_Instalacion.md)
+
+docs/
+  Manual_Instalacion.md    D01
+  Manual_Usuario.md        D03 — guía de uso por rol
+  Guia_Mantenimiento.md    D03 — guía de operación/mantenimiento
+
 src/
   AutoVentas.sln
   AutoVentas.Domain/       Entidades, excepciones de dominio, patrón Composite de permisos
   AutoVentas.DAL/          Acceso a datos ADO.NET puro (Microsoft.Data.SqlClient), sin ORM
   AutoVentas.BLL/          Reglas de negocio por gestión (Vehículos, Clientes, Contratos, etc.)
-  AutoVentas.Services/     Servicios transversales: seguridad, idioma, bitácora, backup, integridad
+  AutoVentas.Services/     Servicios transversales: seguridad, idioma, bitácora, backup, integridad, ayuda, exportación PDF
   AutoVentas.UI/           Windows Forms (MDI por rol)
 ```
 
 ## Puesta en marcha
+
+**La forma más rápida es el instalador automático** — ver `docs/Manual_Instalacion.md` o
+correr `instalador/Instalar.ps1`. A continuación, la puesta en marcha manual:
 
 ### 1. Base de datos
 
@@ -93,7 +104,13 @@ Desde Login también se puede acceder a **Registro** de un nuevo usuario.
 | T06b | Control de cambios (auditoría) | `Services/Bitacora/ServicioControlCambios.cs` |
 | T07 | Backup | `Services/Backup/ServicioBackup.cs`, `UI/Formularios/Ejecutivo/FrmBackup.cs` |
 | T08 | Dígitos verificadores horizontal/vertical | `Services/Integridad/ServicioDigitoVerificador.cs` (se ejecuta al arrancar, antes del login) |
-| — | Gestión de excepciones + serialización | `Services/Excepciones/ServicioManejoExcepciones.cs` (serializa a XML en `Logs/`) |
+| — | Gestión de excepciones | `Services/Excepciones/ServicioManejoExcepciones.cs` |
+| A01 | Instalador | `instalador/Instalar.ps1` — ver `docs/Manual_Instalacion.md` |
+| A02 | Informe y exportación en PDF (librería de terceros, sin impresora virtual) | `Services/Reportes/ServicioExportacionPdf.cs` (PDFsharp), botón "Exportar a PDF" en `FrmReportes` |
+| A03 | Serialización | `ServicioManejoExcepciones` serializa cada excepción no controlada a XML en `Logs/` |
+| D01 | Manual de instalación | `docs/Manual_Instalacion.md` |
+| D02 | Ayuda en línea | `Services/Ayuda/ServicioAyuda.cs`, `UI/Formularios/Comunes/FrmAyuda.cs` (menú "Ayuda" en cada pantalla) |
+| D03 | Guías de usuario/operación/mantenimiento | `docs/Manual_Usuario.md`, `docs/Guia_Mantenimiento.md` |
 
 ## Modelo de datos
 
@@ -104,11 +121,13 @@ Ver `database/01_schema.sql`. Tablas de negocio: `Usuarios`, `Roles`, `Clientes`
 
 ## Limitaciones conocidas / próximos pasos
 
-- No se generó instalador (A01) ni exportación a PDF (A02): no fueron pedidos en el
-  alcance funcional acordado para esta iteración.
 - El código no pudo compilarse en este entorno (no hay Windows ni .NET SDK
   disponibles). Antes de la entrega final, abrir la solución en Visual Studio /
   `dotnet build` en Windows y corregir cualquier error de compilación remanente.
 - La clave de encriptación simétrica (`ServicioCriptografia.ClaveAes`) usa un valor
   por defecto embebido en el código a modo demostrativo; en un despliegue real debería
   administrarse con un mecanismo externo (por ejemplo, DPAPI o un key vault).
+- El instalador automático (`instalador/Instalar.ps1`) no pudo probarse en un entorno
+  Windows real por la misma razón; revisar su ejecución antes de confiar en él para la
+  entrega final, y usar la instalación manual como respaldo (ver
+  `docs/Manual_Instalacion.md`).

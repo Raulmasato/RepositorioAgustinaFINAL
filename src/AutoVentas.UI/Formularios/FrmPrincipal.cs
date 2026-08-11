@@ -26,6 +26,7 @@ public class FrmPrincipal : Form, IObservadorIdioma
     private readonly Button _btnCerrarSesion = new() { Left = 260, Top = 90, Width = 150, Height = 40 };
     private readonly SelectorIdioma _selectorIdioma = new() { Left = 40, Top = 150 };
     private readonly Label _lblIdioma = new() { Left = 40, Top = 152 - 22, Width = 200 };
+    private readonly Button _btnAyuda = new() { Left = 260, Top = 150, Width = 150, Height = 25 };
 
     public FrmPrincipal()
     {
@@ -34,10 +35,11 @@ public class FrmPrincipal : Form, IObservadorIdioma
         StartPosition = FormStartPosition.CenterScreen;
         MaximizeBox = false;
 
-        Controls.AddRange(new Control[] { _lblBienvenida, _btnIrAlMenu, _btnCerrarSesion, _lblIdioma, _selectorIdioma });
+        Controls.AddRange(new Control[] { _lblBienvenida, _btnIrAlMenu, _btnCerrarSesion, _lblIdioma, _selectorIdioma, _btnAyuda });
 
         _btnIrAlMenu.Click += BtnIrAlMenu_Click;
         _btnCerrarSesion.Click += BtnCerrarSesion_Click;
+        _btnAyuda.Click += (_, _) => new FrmAyuda().Show(this);
 
         GestorIdioma.Instancia.Suscribir(this);
         FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
@@ -80,5 +82,6 @@ public class FrmPrincipal : Form, IObservadorIdioma
         _btnIrAlMenu.Text = t.Traducir("btn.iralmenu");
         _btnCerrarSesion.Text = t.Traducir("btn.cerrarsesion");
         _lblIdioma.Text = t.Traducir("menu.idioma");
+        _btnAyuda.Text = t.Traducir("menu.ayuda");
     }
 }

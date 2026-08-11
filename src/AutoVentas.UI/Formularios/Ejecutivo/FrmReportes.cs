@@ -1,6 +1,8 @@
 using AutoVentas.BLL;
 using AutoVentas.Domain.Entidades;
+using AutoVentas.Domain.Excepciones;
 using AutoVentas.Services.Idioma;
+using AutoVentas.Services.Reportes;
 using AutoVentas.Services.Seguridad;
 using AutoVentas.UI.Formularios.Comunes;
 
@@ -11,6 +13,7 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 public class FrmReportes : Form, IObservadorIdioma
 {
     private readonly GestorReportes _gestor = new();
+    private readonly ServicioExportacionPdf _servicioPdf = new();
 
     private readonly DataGridView _grilla = new()
     {
@@ -29,6 +32,7 @@ public class FrmReportes : Form, IObservadorIdioma
     private readonly Button _btnEditar = new() { AutoSize = true };
     private readonly Button _btnEliminar = new() { AutoSize = true };
     private readonly Button _btnRefrescar = new() { AutoSize = true };
+    private readonly Button _btnExportarPdf = new() { AutoSize = true };
     private readonly ControladorListadoCrud<Reporte> _controlador;
 
     public FrmReportes()
@@ -44,7 +48,7 @@ public class FrmReportes : Form, IObservadorIdioma
         _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.FechaHasta), HeaderText = "Hasta" });
         _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Reporte.FechaGeneracion), HeaderText = "Generado" });
 
-        _panelBotones.Controls.AddRange(new Control[] { _btnNuevo, _btnEditar, _btnEliminar, _btnRefrescar });
+        _panelBotones.Controls.AddRange(new Control[] { _btnNuevo, _btnEditar, _btnEliminar, _btnRefrescar, _btnExportarPdf });
         Controls.Add(_grilla);
         Controls.Add(_panelBotones);
 
@@ -56,6 +60,7 @@ public class FrmReportes : Form, IObservadorIdioma
         _btnEditar.Click += (_, _) => _controlador.Editar();
         _btnEliminar.Click += (_, _) => _controlador.EliminarSeleccionado();
         _btnRefrescar.Click += (_, _) => _controlador.Refrescar();
+        _btnExportarPdf.Click += BtnExportarPdf_Click;
 
         Load += (_, _) =>
         {
@@ -78,6 +83,39 @@ public class FrmReportes : Form, IObservadorIdioma
         frm.ShowDialog(this);
     }
 
+    /// <summary>
+    /// A02. Exporta el reporte seleccionado a un archivo PDF real (librería PDFsharp),
+    /// eligiendo la ubicación con el diálogo estándar de Windows. No usa impresora virtual.
+    /// </summary>
+    private void BtnExportarPdf_Click(object? sender, EventArgs e)
+    {
+        if (_controlador.ObtenerSeleccionado() is not { } reporte)
+        {
+            MessageBox.Show(this, GestorIdioma.Instancia.Traducir("msg.seleccionereporte"),
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        using var dialogo = new SaveFileDialog
+        {
+            Filter = "Documento PDF (*.pdf)|*.pdf",
+            FileName = $"Reporte_{reporte.IdReporte}_{reporte.Titulo}.pdf"
+        };
+
+        if (dialogo.ShowDialog(this) != DialogResult.OK) return;
+
+        try
+        {
+            _servicioPdf.ExportarReporte(reporte, dialogo.FileName);
+            MessageBox.Show(this, GestorIdioma.Instancia.Traducir("msg.pdfgenerado"),
+                "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
     public void ActualizarIdioma()
     {
         var t = GestorIdioma.Instancia;
@@ -86,6 +124,7 @@ public class FrmReportes : Form, IObservadorIdioma
         _btnEditar.Text = t.Traducir("btn.editar");
         _btnEliminar.Text = t.Traducir("btn.eliminar");
         _btnRefrescar.Text = t.Traducir("btn.refrescar");
+        _btnExportarPdf.Text = t.Traducir("btn.exportarpdf");
     }
 }
 

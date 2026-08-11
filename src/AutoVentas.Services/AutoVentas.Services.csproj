@@ -10,6 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
+    <!-- A02. Generación de reportes en PDF con una librería de terceros (no impresora virtual). -->
+    <PackageReference Include="PdfSharp" Version="6.2.4" />
   </ItemGroup>
 
   <ItemGroup>

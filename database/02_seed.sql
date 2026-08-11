@@ -212,7 +212,11 @@ DECLARE @fr INT = (SELECT IdIdioma FROM Idiomas WHERE Codigo = 'fr');
         ('msg.backuprestaurado', N'El backup se restauró correctamente.', N'The backup was restored successfully.', N'O backup foi restaurado com sucesso.', N'La sauvegarde a été restaurée avec succès.'),
         ('msg.clientenoencontrado', N'No se encontró un cliente asociado a este usuario.', N'No customer record was found for this user.', N'Nenhum cliente associado a este usuário foi encontrado.', N'Aucun client associé à cet utilisateur n''a été trouvé.'),
         ('btn.traducir', N'Traducir', N'Translate', N'Traduzir', N'Traduire'),
-        ('msg.seleccioneidioma', N'Debe seleccionar un idioma.', N'You must select a language.', N'Selecione um idioma.', N'Vous devez sélectionner une langue.')
+        ('msg.seleccioneidioma', N'Debe seleccionar un idioma.', N'You must select a language.', N'Selecione um idioma.', N'Vous devez sélectionner une langue.'),
+        ('btn.exportarpdf', N'Exportar a PDF', N'Export to PDF', N'Exportar para PDF', N'Exporter en PDF'),
+        ('msg.seleccionereporte', N'Debe seleccionar un reporte de la lista.', N'You must select a report from the list.', N'Selecione um relatório da lista.', N'Vous devez sélectionner un rapport dans la liste.'),
+        ('msg.pdfgenerado', N'El PDF se generó correctamente.', N'The PDF was generated successfully.', N'O PDF foi gerado com sucesso.', N'Le PDF a été généré avec succès.'),
+        ('menu.ayuda', N'Ayuda', N'Help', N'Ajuda', N'Aide')
     ) AS t(Clave, Es, En, Pt, Fr)
 )
 INSERT INTO Traducciones (IdIdioma, Clave, Valor)

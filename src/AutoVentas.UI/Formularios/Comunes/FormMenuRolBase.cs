@@ -11,6 +11,7 @@ public abstract class FormMenuRolBase : Form, IObservadorIdioma
 {
     private readonly MenuStrip _menuStrip = new();
     private readonly ToolStripMenuItem _menuOpciones = new();
+    private readonly ToolStripMenuItem _menuAyuda = new();
     private readonly ToolStripMenuItem _menuVolver = new();
     private readonly ToolStripControlHost _hostSelectorIdioma;
     private readonly List<(ToolStripMenuItem Item, string Clave)> _itemsTraducibles = new();
@@ -28,11 +29,13 @@ public abstract class FormMenuRolBase : Form, IObservadorIdioma
         _hostSelectorIdioma = new ToolStripControlHost(new SelectorIdioma());
 
         _menuStrip.Items.Add(_menuOpciones);
+        _menuStrip.Items.Add(_menuAyuda);
         _menuStrip.Items.Add(_menuVolver);
         _menuStrip.Items.Add(_hostSelectorIdioma);
         MainMenuStrip = _menuStrip;
         Controls.Add(_menuStrip);
 
+        _menuAyuda.Click += (_, _) => new FrmAyuda().Show(this);
         _menuVolver.Click += (_, _) => Close();
 
         GestorIdioma.Instancia.Suscribir(this);
@@ -60,6 +63,7 @@ public abstract class FormMenuRolBase : Form, IObservadorIdioma
         var t = GestorIdioma.Instancia;
         Text = t.Traducir(ClaveTituloIdioma);
         _menuOpciones.Text = t.Traducir(ClaveMenuOpciones);
+        _menuAyuda.Text = t.Traducir("menu.ayuda");
         _menuVolver.Text = t.Traducir("btn.volver");
         foreach (var (item, clave) in _itemsTraducibles)
         {
