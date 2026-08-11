@@ -24,9 +24,10 @@ public class FrmPrincipal : Form, IObservadorIdioma
     private readonly Label _lblBienvenida = new() { Left = 40, Top = 40, Width = 400, Font = new Font(FontFamily.GenericSansSerif, 12) };
     private readonly Button _btnIrAlMenu = new() { Left = 40, Top = 90, Width = 200, Height = 40 };
     private readonly Button _btnCerrarSesion = new() { Left = 260, Top = 90, Width = 150, Height = 40 };
-    private readonly SelectorIdioma _selectorIdioma = new() { Left = 40, Top = 150 };
+    private readonly SelectorIdioma _selectorIdioma = new() { Left = 40, Top = 150, Width = 130 };
     private readonly Label _lblIdioma = new() { Left = 40, Top = 152 - 22, Width = 200 };
-    private readonly Button _btnAyuda = new() { Left = 260, Top = 150, Width = 150, Height = 25 };
+    private readonly Button _traducir = new() { Left = 175, Top = 149, Width = 65 };
+    private readonly Button _btnAyuda = new() { Left = 250, Top = 150, Width = 150, Height = 25 };
 
     public FrmPrincipal()
     {
@@ -35,10 +36,11 @@ public class FrmPrincipal : Form, IObservadorIdioma
         StartPosition = FormStartPosition.CenterScreen;
         MaximizeBox = false;
 
-        Controls.AddRange(new Control[] { _lblBienvenida, _btnIrAlMenu, _btnCerrarSesion, _lblIdioma, _selectorIdioma, _btnAyuda });
+        Controls.AddRange(new Control[] { _lblBienvenida, _btnIrAlMenu, _btnCerrarSesion, _lblIdioma, _selectorIdioma, _traducir, _btnAyuda });
 
         _btnIrAlMenu.Click += BtnIrAlMenu_Click;
         _btnCerrarSesion.Click += BtnCerrarSesion_Click;
+        _traducir.Click += Traducir_Click;
         _btnAyuda.Click += (_, _) => new FrmAyuda().Show(this);
 
         GestorIdioma.Instancia.Suscribir(this);
@@ -73,6 +75,20 @@ public class FrmPrincipal : Form, IObservadorIdioma
         Close();
     }
 
+    /// <summary>T05. Aplica a TODO el programa el idioma elegido en el combo (el combo solo
+    /// selecciona; este botón es el que efectivamente dispara GestorIdioma.CambiarIdioma).</summary>
+    private void Traducir_Click(object? sender, EventArgs e)
+    {
+        if (_selectorIdioma.SelectedItem is not Idioma idiomaSeleccionado)
+        {
+            MessageBox.Show(this, GestorIdioma.Instancia.Traducir("msg.seleccioneidioma"),
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        GestorIdioma.Instancia.CambiarIdioma(idiomaSeleccionado.Codigo);
+    }
+
     public void ActualizarIdioma()
     {
         var t = GestorIdioma.Instancia;
@@ -82,6 +98,7 @@ public class FrmPrincipal : Form, IObservadorIdioma
         _btnIrAlMenu.Text = t.Traducir("btn.iralmenu");
         _btnCerrarSesion.Text = t.Traducir("btn.cerrarsesion");
         _lblIdioma.Text = t.Traducir("menu.idioma");
+        _traducir.Text = t.Traducir("btn.traducir");
         _btnAyuda.Text = t.Traducir("menu.ayuda");
     }
 }

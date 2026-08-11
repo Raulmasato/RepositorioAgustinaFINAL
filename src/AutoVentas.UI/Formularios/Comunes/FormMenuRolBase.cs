@@ -1,4 +1,5 @@
 using AutoVentas.Services.Idioma;
+using EntidadIdioma = AutoVentas.Domain.Entidades.Idioma;
 
 namespace AutoVentas.UI.Formularios.Comunes;
 
@@ -13,6 +14,8 @@ public abstract class FormMenuRolBase : Form, IObservadorIdioma
     private readonly ToolStripMenuItem _menuOpciones = new();
     private readonly ToolStripMenuItem _menuAyuda = new();
     private readonly ToolStripMenuItem _menuVolver = new();
+    private readonly ToolStripMenuItem _menuTraducir = new();
+    private readonly SelectorIdioma _selectorIdioma = new();
     private readonly ToolStripControlHost _hostSelectorIdioma;
     private readonly List<(ToolStripMenuItem Item, string Clave)> _itemsTraducibles = new();
 
@@ -26,17 +29,19 @@ public abstract class FormMenuRolBase : Form, IObservadorIdioma
         StartPosition = FormStartPosition.CenterScreen;
         IsMdiContainer = true;
 
-        _hostSelectorIdioma = new ToolStripControlHost(new SelectorIdioma());
+        _hostSelectorIdioma = new ToolStripControlHost(_selectorIdioma);
 
         _menuStrip.Items.Add(_menuOpciones);
         _menuStrip.Items.Add(_menuAyuda);
         _menuStrip.Items.Add(_menuVolver);
         _menuStrip.Items.Add(_hostSelectorIdioma);
+        _menuStrip.Items.Add(_menuTraducir);
         MainMenuStrip = _menuStrip;
         Controls.Add(_menuStrip);
 
         _menuAyuda.Click += (_, _) => new FrmAyuda().Show(this);
         _menuVolver.Click += (_, _) => Close();
+        _menuTraducir.Click += Traducir_Click;
 
         GestorIdioma.Instancia.Suscribir(this);
         FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
@@ -58,6 +63,20 @@ public abstract class FormMenuRolBase : Form, IObservadorIdioma
         _itemsTraducibles.Add((item, claveIdioma));
     }
 
+    /// <summary>T05. El combo de idioma solo selecciona; este botón es el que aplica el
+    /// cambio a TODO el programa (GestorIdioma.CambiarIdioma, patrón Observer).</summary>
+    private void Traducir_Click(object? sender, EventArgs e)
+    {
+        if (_selectorIdioma.SelectedItem is not EntidadIdioma idiomaSeleccionado)
+        {
+            MessageBox.Show(this, GestorIdioma.Instancia.Traducir("msg.seleccioneidioma"),
+                "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            return;
+        }
+
+        GestorIdioma.Instancia.CambiarIdioma(idiomaSeleccionado.Codigo);
+    }
+
     public virtual void ActualizarIdioma()
     {
         var t = GestorIdioma.Instancia;
@@ -65,6 +84,7 @@ public abstract class FormMenuRolBase : Form, IObservadorIdioma
         _menuOpciones.Text = t.Traducir(ClaveMenuOpciones);
         _menuAyuda.Text = t.Traducir("menu.ayuda");
         _menuVolver.Text = t.Traducir("btn.volver");
+        _menuTraducir.Text = t.Traducir("btn.traducir");
         foreach (var (item, clave) in _itemsTraducibles)
         {
             item.Text = t.Traducir(clave);

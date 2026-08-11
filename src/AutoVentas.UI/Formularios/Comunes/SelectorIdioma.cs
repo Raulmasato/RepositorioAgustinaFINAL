@@ -3,9 +3,10 @@ using EntidadIdioma = AutoVentas.Domain.Entidades.Idioma;
 
 namespace AutoVentas.UI.Formularios.Comunes;
 
-/// <summary>ComboBox reutilizable para cambiar el idioma activo (T05). Al seleccionar un
-/// idioma dispara <see cref="GestorIdioma.CambiarIdioma"/>, que notifica (Observer) a todos
-/// los formularios suscriptos para que refresquen sus textos.</summary>
+/// <summary>ComboBox reutilizable para ELEGIR un idioma (T05). A propósito, seleccionar un
+/// idioma acá NO lo aplica todavía — solo lo deja elegido. Aplicar el cambio (que dispara
+/// <see cref="GestorIdioma.CambiarIdioma"/> y notifica, patrón Observer, a todos los
+/// formularios suscriptos) es responsabilidad del botón "Traducir" de cada pantalla.</summary>
 public class SelectorIdioma : ComboBox
 {
     public SelectorIdioma()
@@ -16,13 +17,6 @@ public class SelectorIdioma : ComboBox
         ValueMember = nameof(EntidadIdioma.Codigo);
 
         Items.AddRange(GestorIdioma.Instancia.IdiomasDisponibles.Cast<object>().ToArray());
-        SelectedIndexChanged += (_, _) =>
-        {
-            if (SelectedItem is EntidadIdioma idioma)
-            {
-                GestorIdioma.Instancia.CambiarIdioma(idioma.Codigo);
-            }
-        };
 
         var actual = GestorIdioma.Instancia.IdiomasDisponibles.FirstOrDefault(i => i.Codigo == GestorIdioma.Instancia.CodigoIdiomaActual);
         if (actual is not null)

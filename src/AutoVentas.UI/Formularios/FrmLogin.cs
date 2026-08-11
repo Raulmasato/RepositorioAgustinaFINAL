@@ -16,7 +16,7 @@ public class FrmLogin : Form, IObservadorIdioma
     private readonly Button _btnIngresar = new() { Left = 140, Top = 115, Width = 95 };
     private readonly Button _btnRegistrarse = new() { Left = 245, Top = 115, Width = 95 };
     private readonly SelectorIdioma _selectorIdioma = new() { Left = 140, Top = 155, Width = 200 };
-    private readonly Button _btnTraducir = new() { Left = 345, Top = 153, Width = 65 };
+    private readonly Button _traducir = new() { Left = 345, Top = 153, Width = 65 };
     private readonly GestorAutenticacion _gestorAutenticacion = new();
 
     public FrmLogin()
@@ -31,22 +31,12 @@ public class FrmLogin : Form, IObservadorIdioma
         Controls.AddRange(new Control[]
         {
             _lblUsuario, _txtUsuario, _lblClave, _txtClave, _btnIngresar, _btnRegistrarse,
-            _selectorIdioma, _btnTraducir
+            _selectorIdioma, _traducir
         });
-
-        // --- DIAGNÓSTICO TEMPORAL: sacar este bloque una vez resuelto el problema de visualización ---
-        MessageBox.Show(
-            $"Controles agregados a esta ventana: {Controls.Count}" + Environment.NewLine +
-            $"Tamaño ventana: {Width}x{Height}" + Environment.NewLine +
-            $".NET en ejecución: {Environment.Version}" + Environment.NewLine +
-            $"Modo alto DPI: {Application.HighDpiMode}" + Environment.NewLine +
-            $"Ruta del ejecutable: {Environment.ProcessPath}",
-            "DIAGNÓSTICO", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        // --- FIN DIAGNÓSTICO TEMPORAL ---
 
         _btnIngresar.Click += BtnIngresar_Click;
         _btnRegistrarse.Click += BtnRegistrarse_Click;
-        _btnTraducir.Click += BtnTraducir_Click;
+        _traducir.Click += Traducir_Click;
         AcceptButton = _btnIngresar;
 
         GestorIdioma.Instancia.Suscribir(this);
@@ -84,7 +74,7 @@ public class FrmLogin : Form, IObservadorIdioma
     /// la base de datos y notifica a cada formulario suscripto (no solo a este) para que
     /// refresque sus textos en caliente, sin necesidad de reiniciar la aplicación.
     /// </summary>
-    private void BtnTraducir_Click(object? sender, EventArgs e)
+    private void Traducir_Click(object? sender, EventArgs e)
     {
         if (_selectorIdioma.SelectedItem is not Idioma idiomaSeleccionado)
         {
@@ -104,6 +94,6 @@ public class FrmLogin : Form, IObservadorIdioma
         _lblClave.Text = t.Traducir("lbl.clave");
         _btnIngresar.Text = t.Traducir("btn.ingresar");
         _btnRegistrarse.Text = t.Traducir("btn.registrarse");
-        _btnTraducir.Text = t.Traducir("btn.traducir");
+        _traducir.Text = t.Traducir("btn.traducir");
     }
 }
