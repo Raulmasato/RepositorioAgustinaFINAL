@@ -28,9 +28,16 @@ public class RepositorioIdiomas
         return filas.ToDictionary(f => f.Clave, f => f.Valor);
     }
 
-    public void AgregarIdioma(string codigo, string nombre) => SqlHelper.EjecutarNonQuery(
+    /// <summary>Da de alta un idioma nuevo y devuelve su Id (T05: incorporar idiomas desde el sistema).</summary>
+    public int AgregarIdioma(string codigo, string nombre) => SqlHelper.EjecutarInsertYObtenerId(
         "INSERT INTO Idiomas (Codigo, Nombre) VALUES (@codigo, @nombre)",
         SqlHelper.Param("@codigo", codigo), SqlHelper.Param("@nombre", nombre));
+
+    /// <summary>Todas las claves de traducción conocidas por el sistema (unión de todos los
+    /// idiomas), para poder mostrarlas como referencia al cargar un idioma nuevo.</summary>
+    public List<string> ObtenerClavesConocidas() => SqlHelper.EjecutarConsulta(
+        "SELECT DISTINCT Clave FROM Traducciones ORDER BY Clave",
+        r => r.GetString(r.GetOrdinal("Clave")));
 
     public void GuardarTraduccion(int idIdioma, string clave, string valor) => SqlHelper.EjecutarNonQuery(
         @"MERGE Traducciones AS destino

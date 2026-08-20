@@ -1,4 +1,6 @@
 using AutoVentas.Services.Idioma;
+using AutoVentas.Services.Permisos;
+using AutoVentas.Services.Seguridad;
 using EntidadIdioma = AutoVentas.Domain.Entidades.Idioma;
 
 namespace AutoVentas.UI.Formularios.Comunes;
@@ -18,6 +20,7 @@ public abstract class FormMenuRolBase : Form, IObservadorIdioma
     private readonly SelectorIdioma _selectorIdioma = new();
     private readonly ToolStripControlHost _hostSelectorIdioma;
     private readonly List<(ToolStripMenuItem Item, string Clave)> _itemsTraducibles = new();
+    private readonly ServicioPermisos _servicioPermisos = new();
 
     protected abstract string ClaveTituloIdioma { get; }
     protected abstract string ClaveMenuOpciones { get; }
@@ -48,9 +51,26 @@ public abstract class FormMenuRolBase : Form, IObservadorIdioma
         Load += (_, _) => ActualizarIdioma();
     }
 
-    /// <summary>Agrega una opción al menú principal que abre (o trae al frente) un formulario hijo MDI.</summary>
-    protected void AgregarOpcion(string claveIdioma, Func<Form> crearFormulario)
+    /// <summary>
+    /// T04. Agrega una opción al menú principal que abre (o trae al frente) un formulario hijo
+    /// MDI, respetando los permisos asignados al rol del usuario logueado: si se indica
+    /// <paramref name="codigoPermiso"/> y el rol actual no lo tiene asignado (directamente o a
+    /// través de un permiso compuesto que lo agrupe), la opción directamente no se agrega al
+    /// menú. Sin <paramref name="codigoPermiso"/> la opción queda disponible para todo el rol
+    /// (uso para funciones administrativas del propio menú, como Bitácora/Backup, que ya están
+    /// acotadas por rol al no existir en los menús de los otros roles).
+    /// </summary>
+    protected void AgregarOpcion(string claveIdioma, Func<Form> crearFormulario, string? codigoPermiso = null)
     {
+        if (codigoPermiso is not null)
+        {
+            var idRol = SesionActual.Instancia.UsuarioLogueado?.IdRol;
+            if (idRol is null || !_servicioPermisos.RolTienePermiso(idRol.Value, codigoPermiso))
+            {
+                return;
+            }
+        }
+
         var item = new ToolStripMenuItem();
         item.Click += (_, _) =>
         {

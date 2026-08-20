@@ -53,6 +53,19 @@ Desde el menú Ejecutivo → **Permisos**: elegir un rol en el combo, tildar/des
 permisos del árbol (tildar un permiso compuesto tilda automáticamente todos sus permisos hijos)
 y presionar **Guardar**. Los cambios se aplican de inmediato.
 
+**Importante:** los permisos no son solo informativos — cada opción de cada menú (Contratos,
+Vehículos, Bitácora, etc.) solo aparece si el rol del usuario logueado tiene asignado el
+permiso correspondiente. Si un rol pierde un permiso, la próxima vez que un usuario de ese rol
+entre a su menú, esa opción directamente no va a estar. Si accidentalmente le sacás a todos
+los roles el permiso de una gestión, la única forma de recuperar el acceso es reasignarlo
+directamente por SQL:
+
+```sql
+INSERT INTO RolPermisos (IdRol, IdPermiso)
+SELECT r.IdRol, p.IdPermiso FROM Roles r, Permisos p
+WHERE r.Nombre = 'Ejecutivo' AND p.Codigo = 'GE-AD'; -- o el código que corresponda
+```
+
 ## Registro de excepciones (gestión de excepciones)
 
 Toda excepción no controlada que ocurra en la aplicación se guarda como un archivo XML
@@ -63,7 +76,14 @@ recientes de esa carpeta para ver el detalle técnico del error.
 ## Multi-idioma (T05)
 
 Las traducciones viven en las tablas `Idiomas` y `Traducciones`, no en archivos del programa.
-Para agregar un idioma nuevo o corregir una traducción, se puede hacer directamente por SQL:
+
+**Forma recomendada:** menú Ejecutivo → **Idiomas**. Ahí se puede dar de alta un idioma nuevo
+(botón "Nuevo idioma": pide un código corto como `it` y un nombre como "Italiano") y editar,
+en una grilla, el texto de cada leyenda conocida del sistema para el idioma seleccionado. Al
+guardar, si el idioma editado es el que está activo en ese momento, el cambio se aplica de
+inmediato a toda la aplicación (no hace falta reiniciar).
+
+**Alternativa por SQL** (equivalente a lo anterior, útil para scripts o carga masiva):
 
 ```sql
 -- Agregar un idioma nuevo
@@ -78,7 +98,14 @@ WHEN MATCHED THEN UPDATE SET Valor = N'Salva'
 WHEN NOT MATCHED THEN INSERT (IdIdioma, Clave, Valor) VALUES (@idIdioma, 'btn.guardar', N'Salva');
 ```
 
-Los formularios que estén abiertos en ese momento no van a ver el idioma nuevo hasta que se
-reinicie la aplicación (recién ahí `GestorIdioma` vuelve a leer la lista de idiomas
-disponibles), pero las traducciones de un idioma ya existente se ven reflejadas apenas se
-vuelve a elegir ese idioma desde el combo.
+Un idioma dado de alta por SQL directamente (sin pasar por la pantalla de Idiomas) recién va a
+aparecer en los combos de selección después de reiniciar la aplicación, porque
+`GestorIdioma` carga la lista de idiomas disponibles una sola vez al arrancar. Dándolo de alta
+desde la pantalla de Idiomas esto no es un problema, porque ella misma refresca esa lista.
+
+## Historial de cambios (T06b)
+
+Menú Ejecutivo → **Historial de cambios**: elegir la tabla (por ejemplo `Vehiculos`) y el Id
+del registro puntual, y presionar Buscar. Se lista, de más reciente a más antiguo, cada campo
+que cambió, quién lo cambió, cuándo, y los valores anterior/nuevo — permitiendo reconstruir el
+estado que tenía el registro en cualquier momento anterior.

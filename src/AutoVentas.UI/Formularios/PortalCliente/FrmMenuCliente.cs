@@ -10,7 +10,7 @@ public class FrmMenuCliente : FormMenuRolBase
 
     public FrmMenuCliente()
     {
-        AgregarOpcion("menu.vehiculos", () => new FrmCatalogoVehiculos());
-        AgregarOpcion("menu.reservas", () => new FrmMisReservas());
+        AgregarOpcion("menu.vehiculos", () => new FrmCatalogoVehiculos(), "VE004");
+        AgregarOpcion("menu.reservas", () => new FrmMisReservas(), "RE004");
     }
 }

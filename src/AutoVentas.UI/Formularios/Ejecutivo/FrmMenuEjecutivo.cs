@@ -11,13 +11,15 @@ public class FrmMenuEjecutivo : FormMenuRolBase
 
     public FrmMenuEjecutivo()
     {
-        AgregarOpcion("menu.contratos", () => new FrmContratos());
-        AgregarOpcion("menu.reservas", () => new FrmReservas());
-        AgregarOpcion("menu.pagos", () => new FrmPagos());
-        AgregarOpcion("menu.entregas", () => new FrmEntregas());
-        AgregarOpcion("menu.reportes", () => new FrmReportes());
-        AgregarOpcion("menu.bitacora", () => new FrmBitacora());
-        AgregarOpcion("menu.permisos", () => new FrmPermisos());
-        AgregarOpcion("menu.backup", () => new FrmBackup());
+        AgregarOpcion("menu.contratos", () => new FrmContratos(), "CO004");
+        AgregarOpcion("menu.reservas", () => new FrmReservas(), "RE004");
+        AgregarOpcion("menu.pagos", () => new FrmPagos(), "PA004");
+        AgregarOpcion("menu.entregas", () => new FrmEntregas(), "EN004");
+        AgregarOpcion("menu.reportes", () => new FrmReportes(), "RP004");
+        AgregarOpcion("menu.bitacora", () => new FrmBitacora(), "AD001");
+        AgregarOpcion("menu.permisos", () => new FrmPermisos(), "AD002");
+        AgregarOpcion("menu.backup", () => new FrmBackup(), "AD003");
+        AgregarOpcion("menu.idiomas", () => new FrmIdiomas(), "AD004");
+        AgregarOpcion("menu.historialcambios", () => new FrmHistorialCambios(), "AD005");
     }
 }

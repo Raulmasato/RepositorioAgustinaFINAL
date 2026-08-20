@@ -25,7 +25,14 @@ Accedé a **Ir a mi menú** para ver, en la barra de menú superior, las siguien
 - **Bitácora**: consulta del historial de actividad de los usuarios del sistema.
 - **Permisos**: asignación de permisos a cada rol.
 - **Copias de seguridad**: generación y restauración de backups de la base de datos.
+- **Idiomas**: alta de idiomas nuevos y edición de las leyendas de la aplicación, sin
+  necesidad de tocar la base de datos directamente.
+- **Historial de cambios**: elegir una tabla y un Id de registro para ver quién modificó qué
+  campo y cuándo.
 - **Ayuda**: ayuda contextual de cada funcionalidad.
+
+Nota: cada una de estas opciones solo aparece en el menú si el rol del usuario logueado tiene
+el permiso correspondiente asignado (ver "Permisos" más arriba y la Guía de Mantenimiento).
 
 Para dar de alta o editar un registro: seleccioná **Nuevo** o **Editar** (con una fila
 seleccionada en la grilla), completá el formulario y presioná **Guardar**. Para eliminar,

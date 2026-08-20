@@ -10,6 +10,6 @@ public class FrmMenuTecnico : FormMenuRolBase
 
     public FrmMenuTecnico()
     {
-        AgregarOpcion("menu.mantenimientos", () => new FrmMantenimientos());
+        AgregarOpcion("menu.mantenimientos", () => new FrmMantenimientos(), "MA004");
     }
 }

@@ -10,8 +10,8 @@ public class FrmMenuVendedor : FormMenuRolBase
 
     public FrmMenuVendedor()
     {
-        AgregarOpcion("menu.presupuestos", () => new FrmPresupuestos());
-        AgregarOpcion("menu.vehiculos", () => new FrmVehiculos());
-        AgregarOpcion("menu.clientes", () => new FrmClientes());
+        AgregarOpcion("menu.presupuestos", () => new FrmPresupuestos(), "PR004");
+        AgregarOpcion("menu.vehiculos", () => new FrmVehiculos(), "VE004");
+        AgregarOpcion("menu.clientes", () => new FrmClientes(), "CL004");
     }
 }

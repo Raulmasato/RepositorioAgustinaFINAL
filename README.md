@@ -12,6 +12,8 @@ database/
   01_schema.sql           Creación de la base de datos y todas las tablas
   02_seed.sql              Roles, permisos (árbol Composite), idiomas/traducciones, usuario admin
   03_datos_prueba.sql      Vehículos de ejemplo (opcional)
+  04_actualizacion_permisos_idiomas.sql   Solo si la BD ya existía antes de agregar
+                            las pantallas de Idiomas e Historial de cambios
 
 instalador/
   Instalar.ps1             A01 — instalador automático (ver docs/Manual_Instalacion.md)
@@ -82,7 +84,7 @@ dotnet run --project AutoVentas.UI
 
 | Rol        | Menú (formularios MDI)                                                        |
 |------------|---------------------------------------------------------------------------------|
-| Ejecutivo  | Contratos, Reservas, Pagos, Entregas, Reportes, Bitácora, Permisos, Backup       |
+| Ejecutivo  | Contratos, Reservas, Pagos, Entregas, Reportes, Bitácora, Permisos, Backup, Idiomas, Historial de cambios |
 | Vendedor   | Presupuestos, Vehículos, Clientes                                               |
 | Técnico    | Mantenimientos                                                                  |
 | Cliente    | Catálogo de vehículos (solo lectura + reservar), Mis reservas (crear/listar)     |
@@ -96,12 +98,12 @@ Desde Login también se puede acceder a **Registro** de un nuevo usuario.
 | Ítem | Descripción | Dónde está implementado |
 |------|-------------|--------------------------|
 | T01 | Arquitectura de 4 capas + MDI | `AutoVentas.Domain/DAL/BLL/Services` + `FormMenuRolBase` (MDI) |
-| T02 | Login/Logout — patrón Singleton | `Services/Seguridad/SesionActual.cs`, `BLL/GestorAutenticacion.cs` |
+| T02 | Login/Logout — patrón Singleton. Arranque/login/apagado diferenciados y auditados | `Services/Seguridad/SesionActual.cs`, `BLL/GestorAutenticacion.cs`, `Program.cs` (bitácora en arranque y en `Application.ApplicationExit`) |
 | T03 | Encriptado (hash de claves + AES para datos sensibles) | `Services/Seguridad/ServicioCriptografia.cs` |
-| T04 | Perfiles de usuario — patrón Composite + TreeView recursivo | `Domain/Permisos/PermisoComponente.cs`, `Services/Permisos/ServicioPermisos.cs`, `UI/Formularios/Ejecutivo/FrmPermisos.cs` |
-| T05 | Múltiples idiomas — patrón Observer, sin .resx estáticos | `Services/Idioma/GestorIdioma.cs`, tabla `Traducciones` |
+| T04 | Perfiles de usuario — patrón Composite + TreeView recursivo, **permisos aplicados realmente** (los ítems de menú se ocultan si el rol no tiene el permiso) | `Domain/Permisos/PermisoComponente.cs`, `Services/Permisos/ServicioPermisos.cs`, `UI/Formularios/Ejecutivo/FrmPermisos.cs`, `UI/Formularios/Comunes/FormMenuRolBase.AgregarOpcion(..., codigoPermiso)` |
+| T05 | Múltiples idiomas — patrón Observer, sin .resx estáticos, **idiomas y leyendas administrables desde el propio sistema** | `Services/Idioma/GestorIdioma.cs`, tabla `Traducciones`, `UI/Formularios/Ejecutivo/FrmIdiomas.cs` |
 | T06a | Bitácora | `Services/Bitacora/ServicioBitacora.cs`, `UI/Formularios/Ejecutivo/FrmBitacora.cs` |
-| T06b | Control de cambios (auditoría) | `Services/Bitacora/ServicioControlCambios.cs` |
+| T06b | Control de cambios (auditoría), con **pantalla para reconstruir el historial de una entidad** | `Services/Bitacora/ServicioControlCambios.cs`, `UI/Formularios/Ejecutivo/FrmHistorialCambios.cs` |
 | T07 | Backup | `Services/Backup/ServicioBackup.cs`, `UI/Formularios/Ejecutivo/FrmBackup.cs` |
 | T08 | Dígitos verificadores horizontal/vertical | `Services/Integridad/ServicioDigitoVerificador.cs` (se ejecuta al arrancar, antes del login) |
 | — | Gestión de excepciones | `Services/Excepciones/ServicioManejoExcepciones.cs` |

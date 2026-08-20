@@ -1,5 +1,6 @@
 using System.Configuration;
 using AutoVentas.DAL.Conexion;
+using AutoVentas.Services.Bitacora;
 using AutoVentas.Services.Excepciones;
 using AutoVentas.Services.Idioma;
 using AutoVentas.Services.Integridad;
@@ -24,9 +25,23 @@ internal static class Program
         };
         Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
+        // T02. Diferenciación de los procesos de arranque / login / apagado del sistema:
+        // el apagado (cierre del proceso, sea por Cerrar sesión, cierre de ventana o Alt+F4)
+        // queda registrado igual que el arranque y el login/logout.
+        Application.ApplicationExit += (_, _) =>
+        {
+            try { new ServicioBitacora().Registrar("Apagado del sistema"); }
+            catch { /* si la BD ya no está disponible al cerrar, no se debe bloquear el cierre */ }
+        };
+
         ApplicationConfiguration.Initialize();
 
         InicializarConexionBD();
+
+        // T02. Arranque del sistema: se registra en bitácora, diferenciado del login/logout
+        // del usuario (que se registra por separado en GestorAutenticacion) y del apagado
+        // (registrado más arriba en Application.ApplicationExit).
+        try { new ServicioBitacora().Registrar("Arranque del sistema"); } catch { /* BD recién inicializándose */ }
 
         // T05. Multi-idioma: se cargan las traducciones desde base de datos antes de mostrar
         // cualquier formulario, para que ya estén disponibles al construir el Login.

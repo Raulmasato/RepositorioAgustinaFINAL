@@ -66,7 +66,9 @@ INSERT INTO Permisos (Codigo, Nombre, IdPermisoPadre) VALUES
     -- Atomicos: administracion
     ('AD001', 'Ver bitacora', NULL),
     ('AD002', 'Gestionar permisos', NULL),
-    ('AD003', 'Gestionar backups', NULL);
+    ('AD003', 'Gestionar backups', NULL),
+    ('AD004', 'Gestionar idiomas', NULL),
+    ('AD005', 'Ver historial de cambios', NULL);
 GO
 
 -- Compuestos de primer nivel (agrupan atomicos por gestion)
@@ -92,7 +94,7 @@ UPDATE Permisos SET IdPermisoPadre = (SELECT IdPermiso FROM Permisos WHERE Codig
 UPDATE Permisos SET IdPermisoPadre = (SELECT IdPermiso FROM Permisos WHERE Codigo = 'GE-EN') WHERE Codigo IN ('EN001','EN002','EN003','EN004');
 UPDATE Permisos SET IdPermisoPadre = (SELECT IdPermiso FROM Permisos WHERE Codigo = 'GE-RP') WHERE Codigo IN ('RP001','RP002','RP003','RP004');
 UPDATE Permisos SET IdPermisoPadre = (SELECT IdPermiso FROM Permisos WHERE Codigo = 'GE-MA') WHERE Codigo IN ('MA001','MA002','MA003','MA004');
-UPDATE Permisos SET IdPermisoPadre = (SELECT IdPermiso FROM Permisos WHERE Codigo = 'GE-AD') WHERE Codigo IN ('AD001','AD002','AD003');
+UPDATE Permisos SET IdPermisoPadre = (SELECT IdPermiso FROM Permisos WHERE Codigo = 'GE-AD') WHERE Codigo IN ('AD001','AD002','AD003','AD004','AD005');
 GO
 
 -- Permiso raiz "Administrador" que agrupa toda la gestion administrativa + reportes
@@ -170,6 +172,11 @@ DECLARE @fr INT = (SELECT IdIdioma FROM Idiomas WHERE Codigo = 'fr');
         ('menu.permisos',     N'Permisos',                N'Permissions',          N'Permissões',           N'Autorisations'),
         ('menu.backup',       N'Copias de seguridad',     N'Backups',              N'Cópias de segurança',  N'Sauvegardes'),
         ('menu.idioma',       N'Idioma',                  N'Language',             N'Idioma',               N'Langue'),
+        ('menu.idiomas',      N'Idiomas',                 N'Languages',            N'Idiomas',              N'Langues'),
+        ('menu.historialcambios', N'Historial de cambios', N'Change history',      N'Histórico de alterações', N'Historique des modifications'),
+        ('btn.nuevoidioma',   N'Nuevo idioma',            N'New language',         N'Novo idioma',          N'Nouvelle langue'),
+        ('msg.idiomaguardado', N'Las traducciones se guardaron correctamente.', N'The translations were saved successfully.', N'As traduções foram salvas com sucesso.', N'Les traductions ont été enregistrées avec succès.'),
+        ('lbl.tabla',         N'Tabla',                   N'Table',                N'Tabela',               N'Table'),
         ('btn.volver',        N'Volver',                  N'Back',                 N'Voltar',               N'Retour'),
         ('btn.buscar',        N'Buscar',                  N'Search',               N'Buscar',               N'Rechercher'),
         ('btn.reservar',      N'Reservar',                N'Reserve',              N'Reservar',             N'Réserver'),
