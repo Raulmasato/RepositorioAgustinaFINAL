@@ -14,6 +14,8 @@ database/
   03_datos_prueba.sql      Vehículos de ejemplo (opcional)
   04_actualizacion_permisos_idiomas.sql   Solo si la BD ya existía antes de agregar
                             las pantallas de Idiomas e Historial de cambios
+  05_agregar_aleman_italiano.sql          Solo si la BD ya existía antes de agregar
+                            alemán e italiano (idempotente)
 
 instalador/
   Instalar.ps1             A01 — instalador automático (ver docs/Manual_Instalacion.md)
@@ -48,7 +50,7 @@ database/03_datos_prueba.sql   (opcional, agrega vehículos de ejemplo)
 ```
 
 Esto crea la base `AutoVentasDB`, sus tablas, los roles/permisos por defecto, las
-traducciones (español/inglés/portugués/francés) y un usuario **Ejecutivo** inicial:
+traducciones (español/inglés/portugués/francés/alemán/italiano) y un usuario **Ejecutivo** inicial:
 
 - Usuario: `admin`
 - Contraseña: `Admin123!`

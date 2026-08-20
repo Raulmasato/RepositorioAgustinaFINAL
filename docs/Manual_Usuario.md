@@ -7,7 +7,9 @@
 3. Si no tenés cuenta, presioná **Registrarse**, completá tus datos y elegí tu rol
    (Cliente, Vendedor, Técnico o Ejecutivo). Si elegís Cliente, además vas a completar tu
    nombre, apellido y DNI.
-4. Podés cambiar el idioma de toda la aplicación con el combo y el botón **Traducir**.
+4. Podés cambiar el idioma de toda la aplicación con el combo y el botón **Traducir**
+   (español, inglés, portugués, francés, alemán e italiano vienen incluidos; el Ejecutivo
+   puede agregar más idiomas desde el sistema, ver más abajo).
 5. Tras un login exitoso, se abre el **Menú Principal**, con un botón **"Ir a mi menú"** que te
    lleva a las opciones correspondientes a tu rol.
 
