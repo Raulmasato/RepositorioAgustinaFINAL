@@ -2,42 +2,17 @@ using AutoVentas.BLL;
 using AutoVentas.Domain.Entidades;
 using AutoVentas.Domain.Excepciones;
 using AutoVentas.Services.Idioma;
-using AutoVentas.UI.Formularios.Comunes;
 
 namespace AutoVentas.UI.Formularios;
 
 /// <summary>T02. Formulario de inicio de sesión, visible antes de acceder a cualquier parte del sistema.</summary>
-public class FrmLogin : Form, IObservadorIdioma
+public partial class FrmLogin : Form, IObservadorIdioma
 {
-    private readonly TextBox _txtUsuario = new() { Left = 140, Top = 40, Width = 200 };
-    private readonly TextBox _txtClave = new() { Left = 140, Top = 75, Width = 200, UseSystemPasswordChar = true };
-    private readonly Label _lblUsuario = new() { Left = 30, Top = 43, Width = 100 };
-    private readonly Label _lblClave = new() { Left = 30, Top = 78, Width = 100 };
-    private readonly Button _btnIngresar = new() { Left = 140, Top = 115, Width = 95 };
-    private readonly Button _btnRegistrarse = new() { Left = 245, Top = 115, Width = 95 };
-    private readonly SelectorIdioma _selectorIdioma = new() { Left = 140, Top = 155, Width = 200 };
-    private readonly Button _traducir = new() { Left = 345, Top = 153, Width = 65 };
     private readonly GestorAutenticacion _gestorAutenticacion = new();
 
     public FrmLogin()
     {
-        Width = 420;
-        Height = 260;
-        FormBorderStyle = FormBorderStyle.FixedDialog;
-        StartPosition = FormStartPosition.CenterScreen;
-        MaximizeBox = false;
-        MinimizeBox = false;
-
-        Controls.AddRange(new Control[]
-        {
-            _lblUsuario, _txtUsuario, _lblClave, _txtClave, _btnIngresar, _btnRegistrarse,
-            _selectorIdioma, _traducir
-        });
-
-        _btnIngresar.Click += BtnIngresar_Click;
-        _btnRegistrarse.Click += BtnRegistrarse_Click;
-        _traducir.Click += Traducir_Click;
-        AcceptButton = _btnIngresar;
+        InitializeComponent();
 
         GestorIdioma.Instancia.Suscribir(this);
         FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
