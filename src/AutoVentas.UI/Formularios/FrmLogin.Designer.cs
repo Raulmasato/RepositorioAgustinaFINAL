@@ -41,6 +41,7 @@ namespace AutoVentas.UI.Formularios
             this._lblUsuario.Name = "_lblUsuario";
             this._lblUsuario.Size = new System.Drawing.Size(100, 23);
             this._lblUsuario.TabIndex = 0;
+            this._lblUsuario.Text = "Usuario";
             //
             // _txtUsuario
             //
@@ -55,6 +56,7 @@ namespace AutoVentas.UI.Formularios
             this._lblClave.Name = "_lblClave";
             this._lblClave.Size = new System.Drawing.Size(100, 23);
             this._lblClave.TabIndex = 2;
+            this._lblClave.Text = "Contraseña";
             //
             // _txtClave
             //
@@ -70,6 +72,7 @@ namespace AutoVentas.UI.Formularios
             this._btnIngresar.Name = "_btnIngresar";
             this._btnIngresar.Size = new System.Drawing.Size(95, 23);
             this._btnIngresar.TabIndex = 4;
+            this._btnIngresar.Text = "Ingresar";
             this._btnIngresar.UseVisualStyleBackColor = true;
             this._btnIngresar.Click += new System.EventHandler(this.BtnIngresar_Click);
             //
@@ -79,6 +82,7 @@ namespace AutoVentas.UI.Formularios
             this._btnRegistrarse.Name = "_btnRegistrarse";
             this._btnRegistrarse.Size = new System.Drawing.Size(95, 23);
             this._btnRegistrarse.TabIndex = 5;
+            this._btnRegistrarse.Text = "Registrarse";
             this._btnRegistrarse.UseVisualStyleBackColor = true;
             this._btnRegistrarse.Click += new System.EventHandler(this.BtnRegistrarse_Click);
             //
@@ -95,12 +99,14 @@ namespace AutoVentas.UI.Formularios
             this._traducir.Name = "_traducir";
             this._traducir.Size = new System.Drawing.Size(65, 23);
             this._traducir.TabIndex = 7;
+            this._traducir.Text = "Traducir";
             this._traducir.UseVisualStyleBackColor = true;
             this._traducir.Click += new System.EventHandler(this.Traducir_Click);
             //
             // FrmLogin
             //
             this.AcceptButton = this._btnIngresar;
+            this.Text = "Iniciar sesión";
             this.Width = 420;
             this.Height = 260;
             this.Controls.Add(this._lblUsuario);
