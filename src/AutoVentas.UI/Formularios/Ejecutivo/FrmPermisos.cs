@@ -11,35 +11,16 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 /// en un TreeView, poblado mediante una función recursiva, y permite tildar/destildar qué
 /// permisos compuestos/atómicos tiene asignados directamente cada rol.
 /// </summary>
-public class FrmPermisos : Form, IObservadorIdioma
+public partial class FrmPermisos : Form, IObservadorIdioma
 {
     private readonly ServicioPermisos _servicioPermisos = new();
     private readonly RepositorioRoles _repositorioRoles = new();
-
-    private readonly Label _lblRol = new() { Left = 10, Top = 14, Width = 60 };
-    private readonly ComboBox _cmbRol = new() { Left = 75, Top = 10, Width = 200, DropDownStyle = ComboBoxStyle.DropDownList };
-    private readonly TreeView _arbol = new() { Dock = DockStyle.Fill, CheckBoxes = true };
-    private readonly Panel _panelSuperior = new() { Dock = DockStyle.Top, Height = 42 };
-    private readonly Button _btnGuardar = new() { Dock = DockStyle.Bottom, Height = 34 };
 
     private bool _actualizandoDesdeCodigo;
 
     public FrmPermisos()
     {
-        Width = 520;
-        Height = 600;
-        StartPosition = FormStartPosition.CenterParent;
-
-        _panelSuperior.Controls.AddRange(new Control[] { _lblRol, _cmbRol });
-        Controls.Add(_arbol);
-        Controls.Add(_btnGuardar);
-        Controls.Add(_panelSuperior);
-
-        _cmbRol.DisplayMember = nameof(Rol.Nombre);
-        _cmbRol.SelectedIndexChanged += (_, _) => CargarArbolParaRolSeleccionado();
-
-        _arbol.AfterCheck += Arbol_AfterCheck;
-        _btnGuardar.Click += (_, _) => GuardarCambios();
+        InitializeComponent();
 
         // Diferido a Load: el diseñador de Visual Studio no debe ejecutar consultas a la BD
         // al instanciar este formulario para dibujarlo.
@@ -52,6 +33,8 @@ public class FrmPermisos : Form, IObservadorIdioma
         };
         FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
     }
+
+    private void CmbRol_SelectedIndexChanged(object? sender, EventArgs e) => CargarArbolParaRolSeleccionado();
 
     private void CargarArbolParaRolSeleccionado()
     {
@@ -107,6 +90,8 @@ public class FrmPermisos : Form, IObservadorIdioma
             MarcarDescendientes(hijo, marcado);
         }
     }
+
+    private void BtnGuardar_Click(object? sender, EventArgs e) => GuardarCambios();
 
     private void GuardarCambios()
     {

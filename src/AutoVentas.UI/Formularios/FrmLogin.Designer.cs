@@ -1,5 +1,3 @@
-using AutoVentas.UI.Formularios.Comunes;
-
 namespace AutoVentas.UI.Formularios
 {
     partial class FrmLogin
@@ -31,7 +29,7 @@ namespace AutoVentas.UI.Formularios
             this._txtClave = new System.Windows.Forms.TextBox();
             this._btnIngresar = new System.Windows.Forms.Button();
             this._btnRegistrarse = new System.Windows.Forms.Button();
-            this._selectorIdioma = new SelectorIdioma();
+            this._selectorIdioma = new AutoVentas.UI.Formularios.Comunes.SelectorIdioma();
             this._traducir = new System.Windows.Forms.Button();
             this.SuspendLayout();
             //
@@ -134,7 +132,7 @@ namespace AutoVentas.UI.Formularios
         private System.Windows.Forms.TextBox _txtClave;
         private System.Windows.Forms.Button _btnIngresar;
         private System.Windows.Forms.Button _btnRegistrarse;
-        private SelectorIdioma _selectorIdioma;
+        private AutoVentas.UI.Formularios.Comunes.SelectorIdioma _selectorIdioma;
         private System.Windows.Forms.Button _traducir;
     }
 }

@@ -6,55 +6,18 @@ using AutoVentas.UI.Formularios.Comunes;
 namespace AutoVentas.UI.Formularios.Vendedor;
 
 /// <summary>Gestión de Vehículos (alta de inventario a cargo del Vendedor).</summary>
-public class FrmVehiculos : Form, IObservadorIdioma
+public partial class FrmVehiculos : Form, IObservadorIdioma
 {
     private readonly GestorVehiculos _gestor = new();
-
-    private readonly DataGridView _grilla = new()
-    {
-        Dock = DockStyle.Fill,
-        ReadOnly = true,
-        AllowUserToAddRows = false,
-        AllowUserToDeleteRows = false,
-        SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-        MultiSelect = false,
-        AutoGenerateColumns = false,
-        AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
-    };
-
-    private readonly FlowLayoutPanel _panelBotones = new() { Dock = DockStyle.Top, Height = 42, Padding = new Padding(6) };
-    private readonly Button _btnNuevo = new() { AutoSize = true };
-    private readonly Button _btnEditar = new() { AutoSize = true };
-    private readonly Button _btnEliminar = new() { AutoSize = true };
-    private readonly Button _btnRefrescar = new() { AutoSize = true };
     private readonly ControladorListadoCrud<Vehiculo> _controlador;
 
     public FrmVehiculos()
     {
-        Width = 820;
-        Height = 500;
-        StartPosition = FormStartPosition.CenterParent;
-
-        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Vehiculo.IdVehiculo), HeaderText = "Id", Width = 50 });
-        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Vehiculo.Marca), HeaderText = "Marca" });
-        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Vehiculo.Modelo), HeaderText = "Modelo" });
-        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Vehiculo.Color), HeaderText = "Color" });
-        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Vehiculo.Anio), HeaderText = "Año" });
-        _grilla.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(Vehiculo.Precio), HeaderText = "Precio" });
-        _grilla.Columns.Add(new DataGridViewCheckBoxColumn { DataPropertyName = nameof(Vehiculo.Disponible), HeaderText = "Disponible" });
-
-        _panelBotones.Controls.AddRange(new Control[] { _btnNuevo, _btnEditar, _btnEliminar, _btnRefrescar });
-        Controls.Add(_grilla);
-        Controls.Add(_panelBotones);
+        InitializeComponent();
 
         _controlador = new ControladorListadoCrud<Vehiculo>(
             this, _grilla, () => _gestor.ObtenerTodos(),
             AbrirAlta, AbrirEdicion, v => _gestor.Eliminar(v.IdVehiculo));
-
-        _btnNuevo.Click += (_, _) => _controlador.Nuevo();
-        _btnEditar.Click += (_, _) => _controlador.Editar();
-        _btnEliminar.Click += (_, _) => _controlador.EliminarSeleccionado();
-        _btnRefrescar.Click += (_, _) => _controlador.Refrescar();
 
         Load += (_, _) =>
         {
@@ -64,6 +27,14 @@ public class FrmVehiculos : Form, IObservadorIdioma
         };
         FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
     }
+
+    private void BtnNuevo_Click(object? sender, EventArgs e) => _controlador.Nuevo();
+
+    private void BtnEditar_Click(object? sender, EventArgs e) => _controlador.Editar();
+
+    private void BtnEliminar_Click(object? sender, EventArgs e) => _controlador.EliminarSeleccionado();
+
+    private void BtnRefrescar_Click(object? sender, EventArgs e) => _controlador.Refrescar();
 
     private void AbrirAlta()
     {
@@ -85,97 +56,5 @@ public class FrmVehiculos : Form, IObservadorIdioma
         _btnEditar.Text = t.Traducir("btn.editar");
         _btnEliminar.Text = t.Traducir("btn.eliminar");
         _btnRefrescar.Text = t.Traducir("btn.refrescar");
-    }
-}
-
-internal class FrmVehiculoEditar : Form, IObservadorIdioma
-{
-    private readonly GestorVehiculos _gestor = new();
-    private readonly Vehiculo? _original;
-
-    private readonly Label _lblMarca = new() { Left = 20, Top = 20, Width = 100 };
-    private readonly TextBox _txtMarca = new() { Left = 130, Top = 17, Width = 200 };
-    private readonly Label _lblModelo = new() { Left = 20, Top = 55, Width = 100 };
-    private readonly TextBox _txtModelo = new() { Left = 130, Top = 52, Width = 200 };
-    private readonly Label _lblColor = new() { Left = 20, Top = 90, Width = 100 };
-    private readonly TextBox _txtColor = new() { Left = 130, Top = 87, Width = 200 };
-    private readonly Label _lblAnio = new() { Left = 20, Top = 125, Width = 100 };
-    private readonly NumericUpDown _numAnio = new() { Left = 130, Top = 122, Width = 100, Minimum = 1950, Maximum = 2100, Value = DateTime.Now.Year };
-    private readonly Label _lblPrecio = new() { Left = 20, Top = 160, Width = 100 };
-    private readonly NumericUpDown _numPrecio = new() { Left = 130, Top = 157, Width = 150, Maximum = 100_000_000, DecimalPlaces = 2 };
-    private readonly CheckBox _chkDisponible = new() { Left = 130, Top = 195, Width = 200, Checked = true };
-    private readonly Button _btnGuardar = new() { Left = 130, Top = 235, Width = 90 };
-    private readonly Button _btnCancelar = new() { Left = 230, Top = 235, Width = 90 };
-
-    public FrmVehiculoEditar(Vehiculo? vehiculo)
-    {
-        _original = vehiculo;
-        Width = 380;
-        Height = 320;
-        FormBorderStyle = FormBorderStyle.FixedDialog;
-        StartPosition = FormStartPosition.CenterParent;
-        MaximizeBox = false;
-        MinimizeBox = false;
-
-        Controls.AddRange(new Control[]
-        {
-            _lblMarca, _txtMarca, _lblModelo, _txtModelo, _lblColor, _txtColor,
-            _lblAnio, _numAnio, _lblPrecio, _numPrecio, _chkDisponible, _btnGuardar, _btnCancelar
-        });
-
-        if (vehiculo is not null)
-        {
-            _txtMarca.Text = vehiculo.Marca;
-            _txtModelo.Text = vehiculo.Modelo;
-            _txtColor.Text = vehiculo.Color;
-            if (vehiculo.Anio is int anio) _numAnio.Value = Math.Clamp(anio, (int)_numAnio.Minimum, (int)_numAnio.Maximum);
-            if (vehiculo.Precio is decimal precio) _numPrecio.Value = Math.Clamp(precio, _numPrecio.Minimum, _numPrecio.Maximum);
-            _chkDisponible.Checked = vehiculo.Disponible;
-        }
-
-        _btnGuardar.Click += BtnGuardar_Click;
-        _btnCancelar.Click += (_, _) => { DialogResult = DialogResult.Cancel; Close(); };
-
-        GestorIdioma.Instancia.Suscribir(this);
-        FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
-        ActualizarIdioma();
-    }
-
-    private void BtnGuardar_Click(object? sender, EventArgs e)
-    {
-        try
-        {
-            var vehiculo = _original ?? new Vehiculo();
-            vehiculo.Marca = _txtMarca.Text.Trim();
-            vehiculo.Modelo = _txtModelo.Text.Trim();
-            vehiculo.Color = _txtColor.Text.Trim();
-            vehiculo.Anio = (int)_numAnio.Value;
-            vehiculo.Precio = _numPrecio.Value;
-            vehiculo.Disponible = _chkDisponible.Checked;
-
-            if (_original is null) _gestor.Agregar(vehiculo);
-            else _gestor.Modificar(vehiculo);
-
-            DialogResult = DialogResult.OK;
-            Close();
-        }
-        catch (Exception ex)
-        {
-            MessageBox.Show(this, ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        }
-    }
-
-    public void ActualizarIdioma()
-    {
-        var t = GestorIdioma.Instancia;
-        Text = t.Traducir("menu.vehiculos");
-        _lblMarca.Text = t.Traducir("lbl.marca");
-        _lblModelo.Text = t.Traducir("lbl.modelo");
-        _lblColor.Text = t.Traducir("lbl.color");
-        _lblAnio.Text = t.Traducir("lbl.anio");
-        _lblPrecio.Text = t.Traducir("lbl.precio");
-        _chkDisponible.Text = t.Traducir("lbl.disponible");
-        _btnGuardar.Text = t.Traducir("btn.guardar");
-        _btnCancelar.Text = t.Traducir("btn.cancelar");
     }
 }

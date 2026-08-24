@@ -10,15 +10,8 @@ namespace AutoVentas.UI.Formularios.Comunes;
 /// Cada gestión habilitada para el rol se abre como formulario hijo MDI, de forma que el
 /// usuario pueda tener varias pantallas abiertas a la vez dentro de su propio menú.
 /// </summary>
-public abstract class FormMenuRolBase : Form, IObservadorIdioma
+public abstract partial class FormMenuRolBase : Form, IObservadorIdioma
 {
-    private readonly MenuStrip _menuStrip = new();
-    private readonly ToolStripMenuItem _menuOpciones = new();
-    private readonly ToolStripMenuItem _menuAyuda = new();
-    private readonly ToolStripMenuItem _menuVolver = new();
-    private readonly ToolStripMenuItem _menuTraducir = new();
-    private readonly SelectorIdioma _selectorIdioma = new();
-    private readonly ToolStripControlHost _hostSelectorIdioma;
     private readonly List<(ToolStripMenuItem Item, string Clave)> _itemsTraducibles = new();
     private readonly ServicioPermisos _servicioPermisos = new();
 
@@ -27,28 +20,21 @@ public abstract class FormMenuRolBase : Form, IObservadorIdioma
 
     protected FormMenuRolBase()
     {
-        Width = 1000;
-        Height = 650;
-        StartPosition = FormStartPosition.CenterScreen;
-        IsMdiContainer = true;
-
-        _hostSelectorIdioma = new ToolStripControlHost(_selectorIdioma);
-
-        _menuStrip.Items.Add(_menuOpciones);
-        _menuStrip.Items.Add(_menuAyuda);
-        _menuStrip.Items.Add(_menuVolver);
-        _menuStrip.Items.Add(_hostSelectorIdioma);
-        _menuStrip.Items.Add(_menuTraducir);
-        MainMenuStrip = _menuStrip;
-        Controls.Add(_menuStrip);
-
-        _menuAyuda.Click += (_, _) => new FrmAyuda().Show(this);
-        _menuVolver.Click += (_, _) => Close();
-        _menuTraducir.Click += Traducir_Click;
+        InitializeComponent();
 
         GestorIdioma.Instancia.Suscribir(this);
         FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
         Load += (_, _) => ActualizarIdioma();
+    }
+
+    private void MenuAyuda_Click(object? sender, EventArgs e)
+    {
+        new FrmAyuda().Show(this);
+    }
+
+    private void MenuVolver_Click(object? sender, EventArgs e)
+    {
+        Close();
     }
 
     /// <summary>

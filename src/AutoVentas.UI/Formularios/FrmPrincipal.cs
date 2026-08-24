@@ -15,33 +15,15 @@ namespace AutoVentas.UI.Formularios;
 /// usuario navega, con un único botón, al menú correspondiente a su rol (Ejecutivo,
 /// Vendedor, Técnico o Cliente), evitando exponer opciones que no le corresponden.
 /// </summary>
-public class FrmPrincipal : Form, IObservadorIdioma
+public partial class FrmPrincipal : Form, IObservadorIdioma
 {
     /// <summary>Le indica a Program.cs si, al cerrarse este formulario, corresponde volver a
     /// mostrar el login (cierre de sesión explícito) en lugar de terminar la aplicación.</summary>
     public static bool SolicitarNuevoLogin;
 
-    private readonly Label _lblBienvenida = new() { Left = 40, Top = 40, Width = 400, Font = new Font(FontFamily.GenericSansSerif, 12) };
-    private readonly Button _btnIrAlMenu = new() { Left = 40, Top = 90, Width = 200, Height = 40 };
-    private readonly Button _btnCerrarSesion = new() { Left = 260, Top = 90, Width = 150, Height = 40 };
-    private readonly SelectorIdioma _selectorIdioma = new() { Left = 40, Top = 150, Width = 130 };
-    private readonly Label _lblIdioma = new() { Left = 40, Top = 152 - 22, Width = 200 };
-    private readonly Button _traducir = new() { Left = 175, Top = 149, Width = 65 };
-    private readonly Button _btnAyuda = new() { Left = 250, Top = 150, Width = 150, Height = 25 };
-
     public FrmPrincipal()
     {
-        Width = 480;
-        Height = 260;
-        StartPosition = FormStartPosition.CenterScreen;
-        MaximizeBox = false;
-
-        Controls.AddRange(new Control[] { _lblBienvenida, _btnIrAlMenu, _btnCerrarSesion, _lblIdioma, _selectorIdioma, _traducir, _btnAyuda });
-
-        _btnIrAlMenu.Click += BtnIrAlMenu_Click;
-        _btnCerrarSesion.Click += BtnCerrarSesion_Click;
-        _traducir.Click += Traducir_Click;
-        _btnAyuda.Click += (_, _) => new FrmAyuda().Show(this);
+        InitializeComponent();
 
         GestorIdioma.Instancia.Suscribir(this);
         FormClosed += (_, _) => GestorIdioma.Instancia.Desuscribir(this);
@@ -73,6 +55,11 @@ public class FrmPrincipal : Form, IObservadorIdioma
         new GestorAutenticacion().CerrarSesion();
         SolicitarNuevoLogin = true;
         Close();
+    }
+
+    private void BtnAyuda_Click(object? sender, EventArgs e)
+    {
+        new FrmAyuda().Show(this);
     }
 
     /// <summary>T05. Aplica a TODO el programa el idioma elegido en el combo (el combo solo
