@@ -50,6 +50,8 @@ namespace AutoVentas.UI.Formularios.Ejecutivo
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Reporte.TipoReporte), HeaderText = "Tipo" });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Reporte.FechaDesde), HeaderText = "Desde" });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Reporte.FechaHasta), HeaderText = "Hasta" });
+            this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Reporte.PorcentajeCantidad), HeaderText = "% Cantidad", Width = 90, DefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle { Format = "0.0", Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight } });
+            this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Reporte.PorcentajeMonto), HeaderText = "% Monto", Width = 90, DefaultCellStyle = new System.Windows.Forms.DataGridViewCellStyle { Format = "0.0", Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight } });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Reporte.FechaGeneracion), HeaderText = "Generado" });
             //
             // _panelBotones

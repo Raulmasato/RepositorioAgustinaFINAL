@@ -19,4 +19,14 @@ public class Reporte
     public int IdUsuarioEjecutivo { get; set; }
     public DateTime FechaGeneracion { get; set; }
     public string? DigitoVerificador { get; set; }
+
+    /// <summary>Porcentaje que la cantidad de registros del período representa sobre el total
+    /// histórico de la tabla correspondiente (por ejemplo, 30 = "30% de todos los contratos
+    /// registrados corresponden a este período"). Null si el reporte es de antes de esta
+    /// funcionalidad y todavía no fue regenerado.</summary>
+    public decimal? PorcentajeCantidad { get; set; }
+
+    /// <summary>Igual que <see cref="PorcentajeCantidad"/> pero sobre el monto (solo aplica a
+    /// Ventas y Pagos, que manejan un importe; queda null en Mantenimientos y Reservas).</summary>
+    public decimal? PorcentajeMonto { get; set; }
 }

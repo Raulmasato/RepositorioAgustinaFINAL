@@ -26,21 +26,34 @@ public class GestorReportes : GestorNegocioBase<Reporte>
 
     public override int Agregar(Reporte reporte)
     {
-        reporte.Contenido = GenerarContenido(reporte.TipoReporte, reporte.FechaDesde, reporte.FechaHasta);
+        reporte.Contenido = GenerarContenido(reporte);
         return base.Agregar(reporte);
     }
 
     public override void Modificar(Reporte reporte)
     {
-        reporte.Contenido = GenerarContenido(reporte.TipoReporte, reporte.FechaDesde, reporte.FechaHasta);
+        reporte.Contenido = GenerarContenido(reporte);
         base.Modificar(reporte);
     }
 
-    private string GenerarContenido(TipoReporte tipo, DateTime desde, DateTime hasta)
+    /// <summary>Genera el texto del reporte y, de paso, deja cargados
+    /// <see cref="Reporte.PorcentajeCantidad"/> y <see cref="Reporte.PorcentajeMonto"/> en
+    /// <paramref name="reporte"/> para que la grilla de FrmReportes pueda mostrarlos como
+    /// columnas propias, sin tener que parsear el texto del contenido.</summary>
+    private string GenerarContenido(Reporte reporte)
     {
+        var tipo = reporte.TipoReporte;
+        var desde = reporte.FechaDesde;
+        var hasta = reporte.FechaHasta;
         var texto = new StringBuilder();
         texto.AppendLine($"Reporte de {tipo} — período {desde:d} a {hasta:d}");
         texto.AppendLine(new string('-', 60));
+
+        // Se limpian antes del switch para que, si se edita un reporte cambiándole el tipo
+        // (por ejemplo de Ventas a Mantenimientos), no quede un porcentaje de monto obsoleto
+        // de un tipo que ya no maneja montos.
+        reporte.PorcentajeCantidad = null;
+        reporte.PorcentajeMonto = null;
 
         switch (tipo)
         {
@@ -49,11 +62,14 @@ public class GestorReportes : GestorNegocioBase<Reporte>
                 var contratos = todosContratos
                     .Where(c => c.FechaContrato >= desde && c.FechaContrato <= hasta).ToList();
 
+                reporte.PorcentajeCantidad = PorcentajeCrudo(contratos.Count, todosContratos.Count);
+
                 AgregarEstadisticas(texto, contratos.Count, todosContratos.Count, "contratos", sb =>
                 {
                     if (contratos.Count == 0) return;
                     var montoPeriodo = contratos.Sum(x => x.Precio);
                     var montoHistorico = todosContratos.Sum(x => x.Precio);
+                    reporte.PorcentajeMonto = PorcentajeCrudo(montoPeriodo, montoHistorico);
                     sb.AppendLine($"Monto total vendido: {montoPeriodo:C} ({Porcentaje(montoPeriodo, montoHistorico)} del monto histórico)");
                     sb.AppendLine($"Precio promedio: {contratos.Average(x => x.Precio):C}");
                     sb.AppendLine($"Precio máximo: {contratos.Max(x => x.Precio):C}");
@@ -82,6 +98,8 @@ public class GestorReportes : GestorNegocioBase<Reporte>
                 var mantenimientos = todosMantenimientos
                     .Where(m => m.FechaServicio >= desde && m.FechaServicio <= hasta).ToList();
 
+                reporte.PorcentajeCantidad = PorcentajeCrudo(mantenimientos.Count, todosMantenimientos.Count);
+
                 AgregarEstadisticas(texto, mantenimientos.Count, todosMantenimientos.Count, "servicios", sb =>
                 {
                     if (mantenimientos.Count == 0) return;
@@ -107,11 +125,14 @@ public class GestorReportes : GestorNegocioBase<Reporte>
                 var pagos = todosPagos
                     .Where(p => p.FechaPago >= desde && p.FechaPago <= hasta).ToList();
 
+                reporte.PorcentajeCantidad = PorcentajeCrudo(pagos.Count, todosPagos.Count);
+
                 AgregarEstadisticas(texto, pagos.Count, todosPagos.Count, "pagos", sb =>
                 {
                     if (pagos.Count == 0) return;
                     var montoPeriodo = pagos.Sum(x => x.Monto);
                     var montoHistorico = todosPagos.Sum(x => x.Monto);
+                    reporte.PorcentajeMonto = PorcentajeCrudo(montoPeriodo, montoHistorico);
                     sb.AppendLine($"Monto total cobrado: {montoPeriodo:C} ({Porcentaje(montoPeriodo, montoHistorico)} del monto histórico)");
                     sb.AppendLine($"Monto promedio: {pagos.Average(x => x.Monto):C}");
                     sb.AppendLine("Por método de pago:");
@@ -133,6 +154,8 @@ public class GestorReportes : GestorNegocioBase<Reporte>
                 var todasReservas = _repositorioReservas.ObtenerTodos();
                 var reservas = todasReservas
                     .Where(r => r.FechaReserva >= desde && r.FechaReserva <= hasta).ToList();
+
+                reporte.PorcentajeCantidad = PorcentajeCrudo(reservas.Count, todasReservas.Count);
 
                 AgregarEstadisticas(texto, reservas.Count, todasReservas.Count, "reservas", sb =>
                 {
@@ -184,4 +207,13 @@ public class GestorReportes : GestorNegocioBase<Reporte>
         total == 0 ? "N/D" : $"{parte / total * 100:0.0} %";
 
     private static string Porcentaje(int parte, int total) => Porcentaje((decimal)parte, total);
+
+    /// <summary>Igual que <see cref="Porcentaje(decimal,decimal)"/> pero devuelve el valor
+    /// numérico (redondeado a 2 decimales) en lugar del texto formateado, para persistirlo en
+    /// <see cref="Reporte.PorcentajeCantidad"/>/<see cref="Reporte.PorcentajeMonto"/> y poder
+    /// mostrarlo como columna en la grilla. Null si el total histórico es cero.</summary>
+    private static decimal? PorcentajeCrudo(decimal parte, decimal total) =>
+        total == 0 ? null : Math.Round(parte / total * 100, 2);
+
+    private static decimal? PorcentajeCrudo(int parte, int total) => PorcentajeCrudo((decimal)parte, total);
 }

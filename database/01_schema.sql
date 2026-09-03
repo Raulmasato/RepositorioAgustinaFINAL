@@ -180,7 +180,9 @@ CREATE TABLE Reportes (
     Contenido            NVARCHAR(MAX) NULL,
     IdUsuarioEjecutivo   INT NOT NULL REFERENCES Usuarios(IdUsuario),
     FechaGeneracion      DATETIME NOT NULL DEFAULT GETDATE(),
-    DigitoVerificador    NVARCHAR(80) NULL
+    DigitoVerificador    NVARCHAR(80) NULL,
+    PorcentajeCantidad   DECIMAL(5,2) NULL, -- % que la cantidad de registros del periodo representa sobre el total historico
+    PorcentajeMonto      DECIMAL(5,2) NULL  -- idem por monto (solo Ventas/Pagos; NULL en Mantenimientos/Reservas)
 );
 GO
 
