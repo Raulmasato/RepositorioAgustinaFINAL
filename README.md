@@ -16,6 +16,8 @@ database/
                             las pantallas de Idiomas e Historial de cambios
   05_agregar_aleman_italiano.sql          Solo si la BD ya existía antes de agregar
                             alemán e italiano (idempotente)
+  06_agregar_porcentajes_reportes.sql     Solo si la BD ya existía antes de agregar
+                            las columnas de porcentaje a Reportes (idempotente)
 
 instalador/
   Instalar.ps1             A01 — instalador automático (ver docs/Manual_Instalacion.md)
