@@ -18,6 +18,10 @@ database/
                             alemán e italiano (idempotente)
   06_agregar_porcentajes_reportes.sql     Solo si la BD ya existía antes de agregar
                             las columnas de porcentaje a Reportes (idempotente)
+  07_sincronizar_traducciones_y_permisos.sql   Reaplica TODO lo de 04+05+06 de una
+                            sola vez (idiomas, permisos, columnas de Reportes y las
+                            84 claves de traducción x 6 idiomas). Recomendado si no
+                            estás seguro de cuáles de los scripts anteriores corriste.
 
 instalador/
   Instalar.ps1             A01 — instalador automático (ver docs/Manual_Instalacion.md)
