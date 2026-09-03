@@ -100,7 +100,7 @@ Desde Login también se puede acceder a **Registro** de un nuevo usuario.
 | Ítem | Descripción | Dónde está implementado |
 |------|-------------|--------------------------|
 | T01 | Arquitectura de 4 capas + MDI | `AutoVentas.Domain/DAL/BLL/Services` + `FormMenuRolBase` (MDI) |
-| T02 | Login/Logout — patrón Singleton. Arranque/login/apagado diferenciados y auditados | `Services/Seguridad/SesionActual.cs`, `BLL/GestorAutenticacion.cs`, `Program.cs` (bitácora en arranque y en `Application.ApplicationExit`) |
+| T02 | Login/Logout — patrón Singleton. Arranque/login/apagado diferenciados y auditados | `Services/Seguridad/SesionActual.cs`, `Services/Seguridad/GestorAutenticacion.cs`, `Program.cs` (bitácora en arranque y en `Application.ApplicationExit`) |
 | T03 | Encriptado (hash de claves + AES para datos sensibles) | `Services/Seguridad/ServicioCriptografia.cs` |
 | T04 | Perfiles de usuario — patrón Composite + TreeView recursivo, **permisos aplicados realmente** (los ítems de menú se ocultan si el rol no tiene el permiso) | `Domain/Permisos/PermisoComponente.cs`, `Services/Permisos/ServicioPermisos.cs`, `UI/Formularios/Ejecutivo/FrmPermisos.cs`, `UI/Formularios/Comunes/FormMenuRolBase.AgregarOpcion(..., codigoPermiso)` |
 | T05 | Múltiples idiomas — patrón Observer, sin .resx estáticos, **idiomas y leyendas administrables desde el propio sistema** | `Services/Idioma/GestorIdioma.cs`, tabla `Traducciones`, `UI/Formularios/Ejecutivo/FrmIdiomas.cs` |

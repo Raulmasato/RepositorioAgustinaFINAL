@@ -3,9 +3,8 @@ using AutoVentas.Domain.Entidades;
 using AutoVentas.Domain.Excepciones;
 using AutoVentas.Services.Bitacora;
 using AutoVentas.Services.Integridad;
-using AutoVentas.Services.Seguridad;
 
-namespace AutoVentas.BLL;
+namespace AutoVentas.Services.Seguridad;
 
 /// <summary>
 /// T02. Gestión de Log In / Log Out del sistema.
