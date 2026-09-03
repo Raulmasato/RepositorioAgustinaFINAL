@@ -45,25 +45,28 @@ public class GestorReportes : GestorNegocioBase<Reporte>
         switch (tipo)
         {
             case TipoReporte.Ventas:
-                var contratos = _repositorioContratos.ObtenerTodos()
+                var todosContratos = _repositorioContratos.ObtenerTodos();
+                var contratos = todosContratos
                     .Where(c => c.FechaContrato >= desde && c.FechaContrato <= hasta).ToList();
 
-                AgregarEstadisticas(texto, contratos.Count, "contratos", sb =>
+                AgregarEstadisticas(texto, contratos.Count, todosContratos.Count, "contratos", sb =>
                 {
                     if (contratos.Count == 0) return;
-                    sb.AppendLine($"Monto total vendido: {contratos.Sum(x => x.Precio):C}");
+                    var montoPeriodo = contratos.Sum(x => x.Precio);
+                    var montoHistorico = todosContratos.Sum(x => x.Precio);
+                    sb.AppendLine($"Monto total vendido: {montoPeriodo:C} ({Porcentaje(montoPeriodo, montoHistorico)} del monto histórico)");
                     sb.AppendLine($"Precio promedio: {contratos.Average(x => x.Precio):C}");
                     sb.AppendLine($"Precio máximo: {contratos.Max(x => x.Precio):C}");
                     sb.AppendLine($"Precio mínimo: {contratos.Min(x => x.Precio):C}");
                     sb.AppendLine("Por estado:");
                     foreach (var g in contratos.GroupBy(x => x.Estado).OrderByDescending(g => g.Count()))
                     {
-                        sb.AppendLine($"  {g.Key}: {g.Count()} contratos - {g.Sum(x => x.Precio):C}");
+                        sb.AppendLine($"  {g.Key}: {g.Count()} contratos ({Porcentaje(g.Count(), contratos.Count)}) - {g.Sum(x => x.Precio):C}");
                     }
                     var vehiculoTop = contratos.GroupBy(x => x.VehiculoDescripcion).OrderByDescending(g => g.Count()).First();
-                    sb.AppendLine($"Vehículo más vendido: {vehiculoTop.Key} ({vehiculoTop.Count()} ventas)");
+                    sb.AppendLine($"Vehículo más vendido: {vehiculoTop.Key} ({vehiculoTop.Count()} ventas, {Porcentaje(vehiculoTop.Count(), contratos.Count)})");
                     var clienteTop = contratos.GroupBy(x => x.ClienteNombreCompleto).OrderByDescending(g => g.Count()).First();
-                    sb.AppendLine($"Cliente con más compras: {clienteTop.Key} ({clienteTop.Count()} compras)");
+                    sb.AppendLine($"Cliente con más compras: {clienteTop.Key} ({clienteTop.Count()} compras, {Porcentaje(clienteTop.Count(), contratos.Count)})");
                 });
 
                 texto.AppendLine();
@@ -75,19 +78,20 @@ public class GestorReportes : GestorNegocioBase<Reporte>
                 break;
 
             case TipoReporte.Mantenimientos:
-                var mantenimientos = _repositorioMantenimientos.ObtenerTodos()
+                var todosMantenimientos = _repositorioMantenimientos.ObtenerTodos();
+                var mantenimientos = todosMantenimientos
                     .Where(m => m.FechaServicio >= desde && m.FechaServicio <= hasta).ToList();
 
-                AgregarEstadisticas(texto, mantenimientos.Count, "servicios", sb =>
+                AgregarEstadisticas(texto, mantenimientos.Count, todosMantenimientos.Count, "servicios", sb =>
                 {
                     if (mantenimientos.Count == 0) return;
                     sb.AppendLine("Por tipo de servicio:");
                     foreach (var g in mantenimientos.GroupBy(x => x.Servicio).OrderByDescending(g => g.Count()))
                     {
-                        sb.AppendLine($"  {g.Key}: {g.Count()}");
+                        sb.AppendLine($"  {g.Key}: {g.Count()} ({Porcentaje(g.Count(), mantenimientos.Count)})");
                     }
                     var vehiculoTop = mantenimientos.GroupBy(x => x.VehiculoDescripcion).OrderByDescending(g => g.Count()).First();
-                    sb.AppendLine($"Vehículo con más mantenimientos: {vehiculoTop.Key} ({vehiculoTop.Count()} servicios)");
+                    sb.AppendLine($"Vehículo con más mantenimientos: {vehiculoTop.Key} ({vehiculoTop.Count()} servicios, {Porcentaje(vehiculoTop.Count(), mantenimientos.Count)})");
                 });
 
                 texto.AppendLine();
@@ -99,18 +103,21 @@ public class GestorReportes : GestorNegocioBase<Reporte>
                 break;
 
             case TipoReporte.Pagos:
-                var pagos = _repositorioPagos.ObtenerTodos()
+                var todosPagos = _repositorioPagos.ObtenerTodos();
+                var pagos = todosPagos
                     .Where(p => p.FechaPago >= desde && p.FechaPago <= hasta).ToList();
 
-                AgregarEstadisticas(texto, pagos.Count, "pagos", sb =>
+                AgregarEstadisticas(texto, pagos.Count, todosPagos.Count, "pagos", sb =>
                 {
                     if (pagos.Count == 0) return;
-                    sb.AppendLine($"Monto total cobrado: {pagos.Sum(x => x.Monto):C}");
+                    var montoPeriodo = pagos.Sum(x => x.Monto);
+                    var montoHistorico = todosPagos.Sum(x => x.Monto);
+                    sb.AppendLine($"Monto total cobrado: {montoPeriodo:C} ({Porcentaje(montoPeriodo, montoHistorico)} del monto histórico)");
                     sb.AppendLine($"Monto promedio: {pagos.Average(x => x.Monto):C}");
                     sb.AppendLine("Por método de pago:");
                     foreach (var g in pagos.GroupBy(x => x.MetodoPago).OrderByDescending(g => g.Count()))
                     {
-                        sb.AppendLine($"  {g.Key}: {g.Count()} pagos - {g.Sum(x => x.Monto):C}");
+                        sb.AppendLine($"  {g.Key}: {g.Count()} pagos ({Porcentaje(g.Count(), pagos.Count)}) - {g.Sum(x => x.Monto):C}");
                     }
                 });
 
@@ -123,19 +130,20 @@ public class GestorReportes : GestorNegocioBase<Reporte>
                 break;
 
             case TipoReporte.Reservas:
-                var reservas = _repositorioReservas.ObtenerTodos()
+                var todasReservas = _repositorioReservas.ObtenerTodos();
+                var reservas = todasReservas
                     .Where(r => r.FechaReserva >= desde && r.FechaReserva <= hasta).ToList();
 
-                AgregarEstadisticas(texto, reservas.Count, "reservas", sb =>
+                AgregarEstadisticas(texto, reservas.Count, todasReservas.Count, "reservas", sb =>
                 {
                     if (reservas.Count == 0) return;
                     sb.AppendLine("Por estado:");
                     foreach (var g in reservas.GroupBy(x => x.Estado).OrderByDescending(g => g.Count()))
                     {
-                        sb.AppendLine($"  {g.Key}: {g.Count()}");
+                        sb.AppendLine($"  {g.Key}: {g.Count()} ({Porcentaje(g.Count(), reservas.Count)})");
                     }
                     var vehiculoTop = reservas.GroupBy(x => x.VehiculoDescripcion).OrderByDescending(g => g.Count()).First();
-                    sb.AppendLine($"Vehículo más reservado: {vehiculoTop.Key} ({vehiculoTop.Count()} reservas)");
+                    sb.AppendLine($"Vehículo más reservado: {vehiculoTop.Key} ({vehiculoTop.Count()} reservas, {Porcentaje(vehiculoTop.Count(), reservas.Count)})");
                 });
 
                 texto.AppendLine();
@@ -151,12 +159,14 @@ public class GestorReportes : GestorNegocioBase<Reporte>
     }
 
     /// <summary>Agrega la sección "Estadísticas" común a los cuatro tipos de reporte: la
-    /// cantidad total de registros del período, seguida de las estadísticas específicas del
-    /// tipo (agregarEspecificas), o un aviso si no hay datos en el rango de fechas elegido.</summary>
-    private static void AgregarEstadisticas(StringBuilder texto, int cantidad, string sustantivoPlural, Action<StringBuilder> agregarEspecificas)
+    /// cantidad de registros del período y qué porcentaje representa sobre el total histórico
+    /// (todos los registros de la tabla, sin filtrar por fecha), seguida de las estadísticas
+    /// específicas del tipo (agregarEspecificas), o un aviso si no hay datos en el rango de
+    /// fechas elegido.</summary>
+    private static void AgregarEstadisticas(StringBuilder texto, int cantidad, int cantidadHistorica, string sustantivoPlural, Action<StringBuilder> agregarEspecificas)
     {
         texto.AppendLine("Estadísticas:");
-        texto.AppendLine($"Cantidad de {sustantivoPlural}: {cantidad}");
+        texto.AppendLine($"Cantidad de {sustantivoPlural} en el período: {cantidad} ({Porcentaje(cantidad, cantidadHistorica)} del total histórico de {cantidadHistorica})");
 
         if (cantidad == 0)
         {
@@ -166,4 +176,12 @@ public class GestorReportes : GestorNegocioBase<Reporte>
 
         agregarEspecificas(texto);
     }
+
+    /// <summary>Calcula qué porcentaje representa <paramref name="parte"/> sobre
+    /// <paramref name="total"/>, devuelto ya formateado (por ejemplo "35,0 %"). Si el total es
+    /// cero (no hay ningún registro histórico) devuelve "N/D" para evitar una división por cero.</summary>
+    private static string Porcentaje(decimal parte, decimal total) =>
+        total == 0 ? "N/D" : $"{parte / total * 100:0.0} %";
+
+    private static string Porcentaje(int parte, int total) => Porcentaje((decimal)parte, total);
 }

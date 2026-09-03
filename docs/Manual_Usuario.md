@@ -23,9 +23,11 @@ Accedé a **Ir a mi menú** para ver, en la barra de menú superior, las siguien
 - **Pagos**: registro de pagos asociados a un contrato.
 - **Entregas**: coordinación de la entrega física del vehículo de un contrato.
 - **Reportes**: generación de reportes (Ventas/Mantenimientos/Pagos/Reservas) por rango de
-  fechas, con exportación a PDF. Cada reporte incluye una sección de **estadísticas** (cantidad
-  de registros, montos totales/promedio/máximo/mínimo según corresponda, desglose por estado o
-  tipo, y el vehículo/cliente más frecuente) además del detalle registro por registro.
+  fechas, con exportación a PDF. Cada reporte incluye una sección de **estadísticas** con el
+  **porcentaje que representa el período elegido sobre el total histórico** (por cantidad de
+  registros y, en Ventas/Pagos, también por monto), además de montos promedio/máximo/mínimo,
+  desglose por estado o tipo (con su propio porcentaje) y el vehículo/cliente más frecuente,
+  antes del detalle registro por registro.
 - **Bitácora**: consulta del historial de actividad de los usuarios del sistema.
 - **Permisos**: asignación de permisos a cada rol.
 - **Copias de seguridad**: generación y restauración de backups de la base de datos.
