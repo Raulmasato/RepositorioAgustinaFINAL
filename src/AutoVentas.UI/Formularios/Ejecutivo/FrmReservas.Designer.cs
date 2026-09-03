@@ -44,7 +44,7 @@ namespace AutoVentas.UI.Formularios.Ejecutivo
             this._grilla.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._grilla.Name = "_grilla";
             this._grilla.TabIndex = 0;
-            this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Reserva.IdReserva), HeaderText = "Id", Width = 50 });
+            this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Reserva.IdReserva), HeaderText = "Id", Width = 50, Visible = false });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Reserva.VehiculoDescripcion), HeaderText = "Vehículo" });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Reserva.ClienteNombreCompleto), HeaderText = "Cliente" });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Reserva.FechaReserva), HeaderText = "Fecha reserva" });

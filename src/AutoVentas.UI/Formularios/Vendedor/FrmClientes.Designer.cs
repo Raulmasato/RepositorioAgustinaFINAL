@@ -43,7 +43,7 @@ namespace AutoVentas.UI.Formularios.Vendedor
             this._grilla.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._grilla.Name = "_grilla";
             this._grilla.TabIndex = 0;
-            this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Cliente.IdCliente), HeaderText = "Id", Width = 50 });
+            this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Cliente.IdCliente), HeaderText = "Id", Width = 50, Visible = false });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Cliente.Nombre), HeaderText = "Nombre" });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Cliente.Apellido), HeaderText = "Apellido" });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Cliente.DniPlano), HeaderText = "DNI" });

@@ -43,7 +43,7 @@ namespace AutoVentas.UI.Formularios.Tecnico
             this._grilla.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this._grilla.Name = "_grilla";
             this._grilla.TabIndex = 0;
-            this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Mantenimiento.IdMantenimiento), HeaderText = "Id", Width = 50 });
+            this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Mantenimiento.IdMantenimiento), HeaderText = "Id", Width = 50, Visible = false });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Mantenimiento.VehiculoDescripcion), HeaderText = "Vehículo" });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Mantenimiento.ClienteNombreCompleto), HeaderText = "Cliente" });
             this._grilla.Columns.Add(new System.Windows.Forms.DataGridViewTextBoxColumn { DataPropertyName = nameof(AutoVentas.Domain.Entidades.Mantenimiento.Servicio), HeaderText = "Servicio" });
