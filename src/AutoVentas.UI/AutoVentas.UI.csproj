@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>AutoVentas.UI</RootNamespace>
+    <AssemblyName>AutoVentas</AssemblyName>
+    <LangVersion>latest</LangVersion>
+    <ApplicationIcon />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutoVentas.Domain\AutoVentas.Domain.csproj" />
+    <ProjectReference Include="..\AutoVentas.DAL\AutoVentas.DAL.csproj" />
+    <ProjectReference Include="..\AutoVentas.BLL\AutoVentas.BLL.csproj" />
+    <ProjectReference Include="..\AutoVentas.Services\AutoVentas.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="App.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
