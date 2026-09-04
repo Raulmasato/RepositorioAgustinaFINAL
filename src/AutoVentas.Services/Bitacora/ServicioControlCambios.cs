@@ -15,10 +15,13 @@ public class ServicioControlCambios
 {
     private readonly RepositorioControlCambios _repositorio = new();
 
-    public void RegistrarAlta<T>(string tabla, int idRegistro, T entidad)
+    /// <param name="camposOcultar">Nombres de propiedades que no deben quedar registradas (por
+    /// ejemplo, ClaveHash/ClaveSalt de Usuario), para no guardar datos sensibles en la
+    /// auditoría aunque la entidad sí los tenga.</param>
+    public void RegistrarAlta<T>(string tabla, int idRegistro, T entidad, params string[] camposOcultar)
     {
         var idUsuario = SesionActual.Instancia.UsuarioLogueado?.IdUsuario;
-        foreach (var propiedad in ObtenerPropiedades<T>())
+        foreach (var propiedad in ObtenerPropiedades<T>(camposOcultar))
         {
             _repositorio.Registrar(new RegistroControlCambio
             {
@@ -33,10 +36,10 @@ public class ServicioControlCambios
         }
     }
 
-    public void RegistrarModificacion<T>(string tabla, int idRegistro, T entidadAnterior, T entidadNueva)
+    public void RegistrarModificacion<T>(string tabla, int idRegistro, T entidadAnterior, T entidadNueva, params string[] camposOcultar)
     {
         var idUsuario = SesionActual.Instancia.UsuarioLogueado?.IdUsuario;
-        foreach (var propiedad in ObtenerPropiedades<T>())
+        foreach (var propiedad in ObtenerPropiedades<T>(camposOcultar))
         {
             var valorAnterior = ObtenerValorTexto(propiedad, entidadAnterior);
             var valorNuevo = ObtenerValorTexto(propiedad, entidadNueva);
@@ -74,9 +77,10 @@ public class ServicioControlCambios
     public List<RegistroControlCambio> ObtenerHistorial(string tabla, int idRegistro)
         => _repositorio.ObtenerHistorial(tabla, idRegistro);
 
-    private static IEnumerable<PropertyInfo> ObtenerPropiedades<T>() =>
+    private static IEnumerable<PropertyInfo> ObtenerPropiedades<T>(IReadOnlyCollection<string>? camposOcultar = null) =>
         typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.CanRead && p.GetIndexParameters().Length == 0);
+            .Where(p => p.CanRead && p.GetIndexParameters().Length == 0
+                        && (camposOcultar is null || !camposOcultar.Contains(p.Name)));
 
     private static string? ObtenerValorTexto<T>(PropertyInfo propiedad, T entidad)
     {

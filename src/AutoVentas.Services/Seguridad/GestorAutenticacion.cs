@@ -19,6 +19,7 @@ public class GestorAutenticacion
     private readonly RepositorioClientes _repositorioClientes = new();
     private readonly ServicioBitacora _bitacora = new();
     private readonly ServicioDigitoVerificador _digitoVerificador = new();
+    private readonly ServicioControlCambios _controlCambios = new();
 
     /// <summary>Verifica usuario/clave e inicia sesión (patrón Singleton en <see cref="SesionActual"/>).</summary>
     public Usuario IniciarSesion(string nombreUsuario, string claveEnClaro)
@@ -79,6 +80,11 @@ public class GestorAutenticacion
         };
 
         usuario.IdUsuario = _repositorioUsuarios.Agregar(usuario);
+        // T06b. Se excluyen ClaveHash/ClaveSalt del historial de cambios: son datos sensibles
+        // y no aportan nada a la auditoría (ya se puede saber que hubo un alta de usuario sin
+        // necesidad de dejar el hash de la contraseña guardado en otra tabla más).
+        _controlCambios.RegistrarAlta("Usuarios", usuario.IdUsuario, usuario,
+            nameof(Usuario.ClaveHash), nameof(Usuario.ClaveSalt));
         _digitoVerificador.RecalcularYGuardar("Usuarios");
 
         if (rol == NombreRol.Cliente)
@@ -93,7 +99,8 @@ public class GestorAutenticacion
                 DniEncriptado = ServicioCriptografia.Encriptar(dniCliente.Trim()),
                 IdUsuario = usuario.IdUsuario
             };
-            _repositorioClientes.Agregar(cliente);
+            cliente.IdCliente = _repositorioClientes.Agregar(cliente);
+            _controlCambios.RegistrarAlta("Clientes", cliente.IdCliente, cliente);
             _digitoVerificador.RecalcularYGuardar("Clientes");
         }
 

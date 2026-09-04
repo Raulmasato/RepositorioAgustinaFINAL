@@ -110,7 +110,12 @@ desde la pantalla de Idiomas esto no es un problema, porque ella misma refresca 
 
 ## Historial de cambios (T06b)
 
-Menú Ejecutivo → **Historial de cambios**: elegir la tabla (por ejemplo `Vehiculos`) y el Id
-del registro puntual, y presionar Buscar. Se lista, de más reciente a más antiguo, cada campo
-que cambió, quién lo cambió, cuándo, y los valores anterior/nuevo — permitiendo reconstruir el
-estado que tenía el registro en cualquier momento anterior.
+Menú Ejecutivo → **Historial de cambios**: elegir la tabla (por ejemplo `Vehiculos`, `Clientes`
+o `Usuarios`) y el Id del registro puntual, y presionar Buscar. Se lista, de más reciente a más
+antiguo, cada campo que cambió, quién lo cambió, cuándo, y los valores anterior/nuevo —
+permitiendo reconstruir el estado que tenía el registro en cualquier momento anterior.
+
+`Usuarios` solo registra el alta (no hay pantalla para editar usuarios todavía) y nunca guarda
+la contraseña ni su hash, por seguridad. `Clientes` registra tanto las altas hechas desde el
+menú Vendedor como las que se generan solas cuando alguien se registra eligiendo el rol
+Cliente.
