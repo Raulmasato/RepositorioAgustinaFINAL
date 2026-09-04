@@ -55,9 +55,7 @@ public class ServicioBackup
 
         try
         {
-            EjecutarComandoBackupORestore(
-                $"RESTORE DATABASE [{nombreBaseDatos}] FROM DISK = @Ruta WITH REPLACE, STATS = 10",
-                registro.RutaArchivo);
+            CortarConexionesYRestaurar(nombreBaseDatos, registro.RutaArchivo);
         }
         catch (Exception ex)
         {
@@ -68,8 +66,10 @@ public class ServicioBackup
     public List<RegistroBackup> ObtenerCatalogo() => _repositorio.ObtenerCatalogo();
 
     /// <summary>
-    /// Ejecuta BACKUP/RESTORE fuera de una transacción explícita (requisito de SQL Server),
+    /// Ejecuta BACKUP fuera de una transacción explícita (requisito de SQL Server),
     /// parametrizando la ruta del archivo mediante sp_executesql para evitar inyección SQL.
+    /// A diferencia del restore, un backup no necesita acceso exclusivo: SQL Server puede
+    /// respaldar una base de datos mientras sigue en uso.
     /// </summary>
     private static void EjecutarComandoBackupORestore(string sqlConParametroRuta, string ruta)
     {
@@ -80,6 +80,50 @@ public class ServicioBackup
         comando.Parameters.AddWithValue("@Sql", sqlConParametroRuta);
         comando.Parameters.AddWithValue("@RutaValor", ruta);
         conexion.Open();
+        comando.ExecuteNonQuery();
+    }
+
+    /// <summary>
+    /// T07. RESTORE DATABASE necesita acceso EXCLUSIVO a la base (a diferencia del backup):
+    /// si el propio programa u otra sesión tienen una conexión abierta a
+    /// <paramref name="nombreBaseDatos"/>, SQL Server rechaza la restauración con
+    /// "No se pudo obtener acceso exclusivo...". Por eso, antes de restaurar, se cortan todas
+    /// las conexiones a esa base (las del propio pool de ADO.NET del programa, vía
+    /// <see cref="SqlConnection.ClearAllPools"/>, y cualquier otra sesión activa en el
+    /// servidor, vía <c>ALTER DATABASE ... SET SINGLE_USER WITH ROLLBACK IMMEDIATE</c>).
+    /// Todo esto se ejecuta contra la base <c>master</c>, nunca contra
+    /// <paramref name="nombreBaseDatos"/> misma, porque no se puede alterar ni restaurar una
+    /// base de datos estando conectado a ella. Al terminar (incluso si el restore falla) se
+    /// vuelve a habilitar el acceso multiusuario normal.
+    /// </summary>
+    private static void CortarConexionesYRestaurar(string nombreBaseDatos, string rutaOrigen)
+    {
+        SqlConnection.ClearAllPools();
+
+        var cadenaMaster = new SqlConnectionStringBuilder(ConexionBD.CadenaConexion) { InitialCatalog = "master" }.ConnectionString;
+        using var conexion = new SqlConnection(cadenaMaster);
+        conexion.Open();
+
+        EjecutarNonQuery(conexion, $"ALTER DATABASE [{nombreBaseDatos}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE");
+        try
+        {
+            using var comandoRestore = new SqlCommand(
+                "EXEC sp_executesql @Sql, N'@Ruta NVARCHAR(400)', @Ruta = @RutaValor", conexion);
+            comandoRestore.CommandTimeout = 0;
+            comandoRestore.Parameters.AddWithValue("@Sql",
+                $"RESTORE DATABASE [{nombreBaseDatos}] FROM DISK = @Ruta WITH REPLACE, STATS = 10");
+            comandoRestore.Parameters.AddWithValue("@RutaValor", rutaOrigen);
+            comandoRestore.ExecuteNonQuery();
+        }
+        finally
+        {
+            EjecutarNonQuery(conexion, $"ALTER DATABASE [{nombreBaseDatos}] SET MULTI_USER");
+        }
+    }
+
+    private static void EjecutarNonQuery(SqlConnection conexion, string sql)
+    {
+        using var comando = new SqlCommand(sql, conexion) { CommandTimeout = 0 };
         comando.ExecuteNonQuery();
     }
 }

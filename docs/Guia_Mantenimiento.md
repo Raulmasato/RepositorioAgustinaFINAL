@@ -10,7 +10,12 @@ Desde el menú Ejecutivo → **Copias de seguridad**:
 - **Generar backup**: crea un archivo `.bak` con una copia completa de `AutoVentasDB` mediante
   `BACKUP DATABASE`, y lo registra en el catálogo (tabla `Backups`).
 - **Restaurar**: selecciona un backup del catálogo y ejecuta `RESTORE DATABASE ... WITH
-  REPLACE`, reemplazando el estado actual de la base de datos por el del backup elegido.
+  REPLACE`, reemplazando el estado actual de la base de datos por el del backup elegido. Como
+  `RESTORE` necesita acceso exclusivo, antes de restaurar el sistema corta automáticamente
+  todas las conexiones a la base (las del propio programa y cualquier otra sesión activa en el
+  servidor, poniéndola en modo `SINGLE_USER`) y las vuelve a habilitar al terminar. Por eso,
+  mientras se restaura un backup, ningún otro usuario puede estar usando el sistema contra esa
+  misma base de datos.
 
 **Recomendación:** generar un backup antes de cualquier operación masiva de datos o antes de
 actualizar el sistema a una nueva versión.
