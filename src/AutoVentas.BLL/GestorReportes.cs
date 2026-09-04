@@ -63,14 +63,14 @@ public class GestorReportes : GestorNegocioBase<Reporte>
                     .Where(c => c.FechaContrato >= desde && c.FechaContrato <= hasta).ToList();
 
                 reporte.PorcentajeCantidad = PorcentajeCrudo(contratos.Count, todosContratos.Count);
+                var montoPeriodoVentas = contratos.Sum(x => x.Precio);
+                var montoHistoricoVentas = todosContratos.Sum(x => x.Precio);
+                reporte.PorcentajeMonto = PorcentajeCrudo(montoPeriodoVentas, montoHistoricoVentas);
 
                 AgregarEstadisticas(texto, contratos.Count, todosContratos.Count, "contratos", sb =>
                 {
                     if (contratos.Count == 0) return;
-                    var montoPeriodo = contratos.Sum(x => x.Precio);
-                    var montoHistorico = todosContratos.Sum(x => x.Precio);
-                    reporte.PorcentajeMonto = PorcentajeCrudo(montoPeriodo, montoHistorico);
-                    sb.AppendLine($"Monto total vendido: {montoPeriodo:C} ({Porcentaje(montoPeriodo, montoHistorico)} del monto histórico)");
+                    sb.AppendLine($"Monto total vendido: {montoPeriodoVentas:C} ({Porcentaje(montoPeriodoVentas, montoHistoricoVentas)} del monto histórico)");
                     sb.AppendLine($"Precio promedio: {contratos.Average(x => x.Precio):C}");
                     sb.AppendLine($"Precio máximo: {contratos.Max(x => x.Precio):C}");
                     sb.AppendLine($"Precio mínimo: {contratos.Min(x => x.Precio):C}");
@@ -126,14 +126,14 @@ public class GestorReportes : GestorNegocioBase<Reporte>
                     .Where(p => p.FechaPago >= desde && p.FechaPago <= hasta).ToList();
 
                 reporte.PorcentajeCantidad = PorcentajeCrudo(pagos.Count, todosPagos.Count);
+                var montoPeriodoPagos = pagos.Sum(x => x.Monto);
+                var montoHistoricoPagos = todosPagos.Sum(x => x.Monto);
+                reporte.PorcentajeMonto = PorcentajeCrudo(montoPeriodoPagos, montoHistoricoPagos);
 
                 AgregarEstadisticas(texto, pagos.Count, todosPagos.Count, "pagos", sb =>
                 {
                     if (pagos.Count == 0) return;
-                    var montoPeriodo = pagos.Sum(x => x.Monto);
-                    var montoHistorico = todosPagos.Sum(x => x.Monto);
-                    reporte.PorcentajeMonto = PorcentajeCrudo(montoPeriodo, montoHistorico);
-                    sb.AppendLine($"Monto total cobrado: {montoPeriodo:C} ({Porcentaje(montoPeriodo, montoHistorico)} del monto histórico)");
+                    sb.AppendLine($"Monto total cobrado: {montoPeriodoPagos:C} ({Porcentaje(montoPeriodoPagos, montoHistoricoPagos)} del monto histórico)");
                     sb.AppendLine($"Monto promedio: {pagos.Average(x => x.Monto):C}");
                     sb.AppendLine("Por método de pago:");
                     foreach (var g in pagos.GroupBy(x => x.MetodoPago).OrderByDescending(g => g.Count()))
