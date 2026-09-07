@@ -58,8 +58,9 @@ seleccioná una fila y presioná **Eliminar** (se pide confirmación).
 
 ## Menú del Cliente
 
-- **Vehículos** (catálogo): listado de solo lectura de los vehículos disponibles, con un botón
-  **Reservar** para iniciar una reserva sobre el vehículo seleccionado.
+- **Vehículos** (catálogo): listado de solo lectura de los vehículos disponibles, con un cuadro
+  de búsqueda que filtra por marca o modelo a medida que escribís, y un botón **Reservar** para
+  iniciar una reserva sobre el vehículo seleccionado.
 - **Reservas** ("Mis reservas"): listado de las reservas propias, con un botón **Nueva
   reserva** para crear una reserva adicional. A diferencia del Ejecutivo, el Cliente solo ve y
   crea sus propias reservas, no las de otros clientes.

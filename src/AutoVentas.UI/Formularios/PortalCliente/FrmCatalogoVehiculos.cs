@@ -11,6 +11,7 @@ public partial class FrmCatalogoVehiculos : Form, IObservadorIdioma
 {
     private readonly GestorVehiculos _gestorVehiculos = new();
     private readonly GestorClientes _gestorClientes = new();
+    private List<Vehiculo> _vehiculosDisponibles = new();
 
     public FrmCatalogoVehiculos()
     {
@@ -27,9 +28,27 @@ public partial class FrmCatalogoVehiculos : Form, IObservadorIdioma
 
     private void Refrescar()
     {
-        _grilla.DataSource = null;
-        _grilla.DataSource = _gestorVehiculos.ObtenerDisponibles();
+        _vehiculosDisponibles = _gestorVehiculos.ObtenerDisponibles();
+        AplicarFiltro();
     }
+
+    /// <summary>Filtra en memoria (la lista de disponibles ya está completa en
+    /// <see cref="_vehiculosDisponibles"/>) por marca o modelo, sin distinguir mayúsculas de
+    /// minúsculas, a medida que el cliente escribe en el cuadro de búsqueda.</summary>
+    private void AplicarFiltro()
+    {
+        var texto = _txtBuscar.Text.Trim();
+        var filtrados = texto.Length == 0
+            ? _vehiculosDisponibles
+            : _vehiculosDisponibles.Where(v =>
+                v.Marca.Contains(texto, StringComparison.OrdinalIgnoreCase) ||
+                v.Modelo.Contains(texto, StringComparison.OrdinalIgnoreCase)).ToList();
+
+        _grilla.DataSource = null;
+        _grilla.DataSource = filtrados;
+    }
+
+    private void TxtBuscar_TextChanged(object? sender, EventArgs e) => AplicarFiltro();
 
     private void BtnReservar_Click(object? sender, EventArgs e)
     {
@@ -54,6 +73,7 @@ public partial class FrmCatalogoVehiculos : Form, IObservadorIdioma
     {
         var t = GestorIdioma.Instancia;
         Text = t.Traducir("menu.vehiculos");
+        _lblBuscar.Text = t.Traducir("lbl.buscarvehiculo");
         _btnReservar.Text = t.Traducir("btn.reservar");
     }
 }

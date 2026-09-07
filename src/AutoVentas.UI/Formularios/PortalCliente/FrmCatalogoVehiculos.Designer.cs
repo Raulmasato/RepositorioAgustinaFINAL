@@ -25,6 +25,8 @@ namespace AutoVentas.UI.Formularios.PortalCliente
         {
             this._grilla = new System.Windows.Forms.DataGridView();
             this._panelBotones = new System.Windows.Forms.FlowLayoutPanel();
+            this._lblBuscar = new System.Windows.Forms.Label();
+            this._txtBuscar = new System.Windows.Forms.TextBox();
             this._btnReservar = new System.Windows.Forms.Button();
             this.SuspendLayout();
             //
@@ -53,13 +55,33 @@ namespace AutoVentas.UI.Formularios.PortalCliente
             this._panelBotones.Padding = new System.Windows.Forms.Padding(6);
             this._panelBotones.Name = "_panelBotones";
             this._panelBotones.TabIndex = 1;
+            this._panelBotones.Controls.Add(this._lblBuscar);
+            this._panelBotones.Controls.Add(this._txtBuscar);
             this._panelBotones.Controls.Add(this._btnReservar);
+            //
+            // _lblBuscar
+            //
+            this._lblBuscar.AutoSize = true;
+            this._lblBuscar.Location = new System.Drawing.Point(3, 0);
+            this._lblBuscar.Margin = new System.Windows.Forms.Padding(3, 8, 3, 0);
+            this._lblBuscar.Name = "_lblBuscar";
+            this._lblBuscar.Size = new System.Drawing.Size(140, 23);
+            this._lblBuscar.TabIndex = 0;
+            this._lblBuscar.Text = "Buscar (marca o modelo)";
+            //
+            // _txtBuscar
+            //
+            this._txtBuscar.Location = new System.Drawing.Point(149, 3);
+            this._txtBuscar.Name = "_txtBuscar";
+            this._txtBuscar.Size = new System.Drawing.Size(220, 23);
+            this._txtBuscar.TabIndex = 1;
+            this._txtBuscar.TextChanged += new System.EventHandler(this.TxtBuscar_TextChanged);
             //
             // _btnReservar
             //
             this._btnReservar.AutoSize = true;
             this._btnReservar.Name = "_btnReservar";
-            this._btnReservar.TabIndex = 0;
+            this._btnReservar.TabIndex = 2;
             this._btnReservar.Text = "Reservar";
             this._btnReservar.UseVisualStyleBackColor = true;
             this._btnReservar.Click += new System.EventHandler(this.BtnReservar_Click);
@@ -81,6 +103,8 @@ namespace AutoVentas.UI.Formularios.PortalCliente
 
         private System.Windows.Forms.DataGridView _grilla;
         private System.Windows.Forms.FlowLayoutPanel _panelBotones;
+        private System.Windows.Forms.Label _lblBuscar;
+        private System.Windows.Forms.TextBox _txtBuscar;
         private System.Windows.Forms.Button _btnReservar;
     }
 }
