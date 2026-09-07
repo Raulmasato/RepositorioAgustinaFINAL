@@ -6,7 +6,7 @@ namespace AutoVentas.UI.Formularios.Vendedor;
 
 internal partial class FrmVehiculoEditar : Form, IObservadorIdioma
 {
-    private readonly GestorVehiculos _gestor = new();
+    private readonly IGestorVehiculos _gestor = new GestorVehiculos();
     private readonly Vehiculo? _original;
 
     public FrmVehiculoEditar(Vehiculo? vehiculo)

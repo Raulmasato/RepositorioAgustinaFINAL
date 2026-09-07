@@ -8,7 +8,7 @@ namespace AutoVentas.UI.Formularios.Vendedor;
 /// <summary>Gestión de Clientes (a cargo del Vendedor).</summary>
 public partial class FrmClientes : Form, IObservadorIdioma
 {
-    private readonly GestorClientes _gestor = new();
+    private readonly IGestorClientes _gestor = new GestorClientes();
     private readonly ControladorListadoCrud<Cliente> _controlador;
 
     public FrmClientes()

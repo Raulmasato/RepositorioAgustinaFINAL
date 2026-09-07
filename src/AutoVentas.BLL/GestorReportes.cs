@@ -7,7 +7,7 @@ namespace AutoVentas.BLL;
 
 /// <summary>Gestión de Reportes (Ejecutivo). Al crear un reporte se genera automáticamente
 /// su contenido consultando los datos del período y tipo seleccionados.</summary>
-public class GestorReportes : GestorNegocioBase<Reporte>
+public class GestorReportes : GestorNegocioBase<Reporte>, IGestorReportes
 {
     private readonly RepositorioContratos _repositorioContratos = new();
     private readonly RepositorioMantenimientos _repositorioMantenimientos = new();

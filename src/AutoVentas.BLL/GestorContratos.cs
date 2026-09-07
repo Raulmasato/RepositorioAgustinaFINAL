@@ -5,7 +5,7 @@ using AutoVentas.Domain.Excepciones;
 namespace AutoVentas.BLL;
 
 /// <summary>Gestión de Contratos (Ejecutivo). Un contrato puede originarse en un presupuesto (&lt;&lt;include&gt;&gt;).</summary>
-public class GestorContratos : GestorNegocioBase<Contrato>
+public class GestorContratos : GestorNegocioBase<Contrato>, IGestorContratos
 {
     public GestorContratos() : base(new RepositorioContratos(), "Contratos") { }
 

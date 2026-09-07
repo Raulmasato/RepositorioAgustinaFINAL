@@ -34,8 +34,13 @@ docs/
 src/
   AutoVentas.sln
   AutoVentas.Domain/       Entidades, excepciones de dominio, patrón Composite de permisos
-  AutoVentas.DAL/          Acceso a datos ADO.NET puro (Microsoft.Data.SqlClient), sin ORM
-  AutoVentas.BLL/          Reglas de negocio por gestión (Vehículos, Clientes, Contratos, etc.)
+  AutoVentas.DAL/          Acceso a datos ADO.NET puro (Microsoft.Data.SqlClient), sin ORM.
+                            Cada repositorio implementa el contrato IRepositorio<T>
+  AutoVentas.BLL/          Reglas de negocio por gestión (Vehículos, Clientes, Contratos, etc.).
+                            Cada gestión implementa su propia interfaz (IGestorVehiculos,
+                            IGestorClientes, etc.), a su vez basada en IGestorNegocioBase<T> —
+                            el mismo contrato CRUD que IRepositorio<T> pero en la capa BLL — de
+                            forma que la UI dependa de la abstracción y no de la clase concreta
   AutoVentas.Services/     Servicios transversales: seguridad, idioma, bitácora, backup, integridad, ayuda, exportación PDF
   AutoVentas.UI/           Windows Forms (MDI por rol)
 ```
@@ -105,7 +110,7 @@ Desde Login también se puede acceder a **Registro** de un nuevo usuario.
 
 | Ítem | Descripción | Dónde está implementado |
 |------|-------------|--------------------------|
-| T01 | Arquitectura de 4 capas + MDI | `AutoVentas.Domain/DAL/BLL/Services` + `FormMenuRolBase` (MDI) |
+| T01 | Arquitectura de 4 capas + MDI, con contratos/interfaces en DAL y BLL | `AutoVentas.Domain/DAL/BLL/Services` + `FormMenuRolBase` (MDI); `IRepositorio<T>` (DAL) e `IGestorNegocioBase<T>` + interfaces por gestión (BLL) |
 | T02 | Login/Logout — patrón Singleton. Arranque/login/apagado diferenciados y auditados | `Services/Seguridad/SesionActual.cs`, `Services/Seguridad/GestorAutenticacion.cs`, `Program.cs` (bitácora en arranque y en `Application.ApplicationExit`) |
 | T03 | Encriptado (hash de claves + AES para datos sensibles) | `Services/Seguridad/ServicioCriptografia.cs` |
 | T04 | Perfiles de usuario — patrón Composite + TreeView recursivo, **permisos aplicados realmente** (los ítems de menú se ocultan si el rol no tiene el permiso) | `Domain/Permisos/PermisoComponente.cs`, `Services/Permisos/ServicioPermisos.cs`, `UI/Formularios/Ejecutivo/FrmPermisos.cs`, `UI/Formularios/Comunes/FormMenuRolBase.AgregarOpcion(..., codigoPermiso)` |

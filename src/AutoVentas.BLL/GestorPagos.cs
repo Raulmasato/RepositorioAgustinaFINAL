@@ -5,7 +5,7 @@ using AutoVentas.Domain.Excepciones;
 namespace AutoVentas.BLL;
 
 /// <summary>Gestión de Pagos (Ejecutivo).</summary>
-public class GestorPagos : GestorNegocioBase<Pago>
+public class GestorPagos : GestorNegocioBase<Pago>, IGestorPagos
 {
     public GestorPagos() : base(new RepositorioPagos(), "Pagos") { }
 

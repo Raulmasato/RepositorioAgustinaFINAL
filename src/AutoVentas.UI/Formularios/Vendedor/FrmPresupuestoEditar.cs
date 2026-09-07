@@ -7,7 +7,7 @@ namespace AutoVentas.UI.Formularios.Vendedor;
 
 internal partial class FrmPresupuestoEditar : Form, IObservadorIdioma
 {
-    private readonly GestorPresupuestos _gestor = new();
+    private readonly IGestorPresupuestos _gestor = new GestorPresupuestos();
     private readonly Presupuesto? _original;
 
     public FrmPresupuestoEditar(Presupuesto? presupuesto)

@@ -9,7 +9,7 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 /// queda acotada a ese cliente (usado por el menú de Cliente, que solo puede reservar para sí mismo).</summary>
 internal partial class FrmReservaEditar : Form, IObservadorIdioma
 {
-    private readonly GestorReservas _gestor = new();
+    private readonly IGestorReservas _gestor = new GestorReservas();
     private readonly Reserva? _original;
     private readonly Cliente? _clienteFijo;
 

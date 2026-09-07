@@ -5,7 +5,7 @@ using AutoVentas.Domain.Excepciones;
 namespace AutoVentas.BLL;
 
 /// <summary>Gestión de Mantenimientos (Técnico).</summary>
-public class GestorMantenimientos : GestorNegocioBase<Mantenimiento>
+public class GestorMantenimientos : GestorNegocioBase<Mantenimiento>, IGestorMantenimientos
 {
     public GestorMantenimientos() : base(new RepositorioMantenimientos(), "Mantenimientos") { }
 

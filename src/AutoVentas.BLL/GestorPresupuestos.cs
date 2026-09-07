@@ -5,7 +5,7 @@ using AutoVentas.Domain.Excepciones;
 namespace AutoVentas.BLL;
 
 /// <summary>Gestión de Presupuestos (Vendedor).</summary>
-public class GestorPresupuestos : GestorNegocioBase<Presupuesto>
+public class GestorPresupuestos : GestorNegocioBase<Presupuesto>, IGestorPresupuestos
 {
     public GestorPresupuestos() : base(new RepositorioPresupuestos(), "Presupuestos") { }
 

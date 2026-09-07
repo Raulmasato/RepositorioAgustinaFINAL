@@ -8,7 +8,7 @@ namespace AutoVentas.BLL;
 /// Gestión de Reservas. El Ejecutivo tiene CRUD completo; el Cliente solo puede crear
 /// y listar sus propias reservas (ver ObtenerPorCliente).
 /// </summary>
-public class GestorReservas : GestorNegocioBase<Reserva>
+public class GestorReservas : GestorNegocioBase<Reserva>, IGestorReservas
 {
     public GestorReservas() : base(new RepositorioReservas(), "Reservas") { }
 

@@ -10,7 +10,7 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 /// del tipo de reporte y el rango de fechas seleccionado.</summary>
 public partial class FrmReportes : Form, IObservadorIdioma
 {
-    private readonly GestorReportes _gestor = new();
+    private readonly IGestorReportes _gestor = new GestorReportes();
     private readonly ServicioExportacionPdf _servicioPdf = new();
     private readonly ControladorListadoCrud<Reporte> _controlador;
 

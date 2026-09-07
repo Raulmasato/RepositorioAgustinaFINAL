@@ -8,7 +8,7 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 /// <summary>Gestión de Contratos (Ejecutivo). Puede originarse en un Presupuesto (&lt;&lt;include&gt;&gt;).</summary>
 public partial class FrmContratos : Form, IObservadorIdioma
 {
-    private readonly GestorContratos _gestor = new();
+    private readonly IGestorContratos _gestor = new GestorContratos();
     private readonly ControladorListadoCrud<Contrato> _controlador;
 
     public FrmContratos()

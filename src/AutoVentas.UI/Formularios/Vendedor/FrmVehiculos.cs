@@ -8,7 +8,7 @@ namespace AutoVentas.UI.Formularios.Vendedor;
 /// <summary>Gestión de Vehículos (alta de inventario a cargo del Vendedor).</summary>
 public partial class FrmVehiculos : Form, IObservadorIdioma
 {
-    private readonly GestorVehiculos _gestor = new();
+    private readonly IGestorVehiculos _gestor = new GestorVehiculos();
     private readonly ControladorListadoCrud<Vehiculo> _controlador;
 
     public FrmVehiculos()

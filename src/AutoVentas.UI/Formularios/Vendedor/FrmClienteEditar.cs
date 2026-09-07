@@ -6,7 +6,7 @@ namespace AutoVentas.UI.Formularios.Vendedor;
 
 internal partial class FrmClienteEditar : Form, IObservadorIdioma
 {
-    private readonly GestorClientes _gestor = new();
+    private readonly IGestorClientes _gestor = new GestorClientes();
     private readonly Cliente? _original;
 
     public FrmClienteEditar(Cliente? cliente)

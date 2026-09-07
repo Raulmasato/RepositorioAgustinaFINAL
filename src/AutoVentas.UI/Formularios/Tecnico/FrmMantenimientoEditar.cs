@@ -6,7 +6,7 @@ namespace AutoVentas.UI.Formularios.Tecnico;
 
 internal partial class FrmMantenimientoEditar : Form, IObservadorIdioma
 {
-    private readonly GestorMantenimientos _gestor = new();
+    private readonly IGestorMantenimientos _gestor = new GestorMantenimientos();
     private readonly Mantenimiento? _original;
 
     public FrmMantenimientoEditar(Mantenimiento? mantenimiento)

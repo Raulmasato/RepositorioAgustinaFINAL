@@ -8,7 +8,7 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 /// <summary>Gestión de Pagos (Ejecutivo).</summary>
 public partial class FrmPagos : Form, IObservadorIdioma
 {
-    private readonly GestorPagos _gestor = new();
+    private readonly IGestorPagos _gestor = new GestorPagos();
     private readonly ControladorListadoCrud<Pago> _controlador;
 
     public FrmPagos()

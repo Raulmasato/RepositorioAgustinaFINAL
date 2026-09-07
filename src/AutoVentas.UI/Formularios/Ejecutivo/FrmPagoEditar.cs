@@ -9,7 +9,7 @@ internal partial class FrmPagoEditar : Form, IObservadorIdioma
 {
     private static readonly string[] MetodosPago = { "Efectivo", "Transferencia", "Tarjeta de crédito", "Tarjeta de débito", "Cheque" };
 
-    private readonly GestorPagos _gestor = new();
+    private readonly IGestorPagos _gestor = new GestorPagos();
     private readonly Pago? _original;
 
     public FrmPagoEditar(Pago? pago)

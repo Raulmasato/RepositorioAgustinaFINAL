@@ -11,7 +11,7 @@ namespace AutoVentas.BLL;
 /// Las clases concretas solo aportan las reglas de validación propias de la entidad y,
 /// si corresponde, consultas adicionales (reuso entre gestiones, criterio evaluado en la cátedra).
 /// </summary>
-public abstract class GestorNegocioBase<T>
+public abstract class GestorNegocioBase<T> : IGestorNegocioBase<T>
 {
     protected readonly IRepositorio<T> Repositorio;
     protected readonly string NombreTabla;

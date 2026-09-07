@@ -11,8 +11,8 @@ namespace AutoVentas.UI.Formularios.PortalCliente;
 /// </summary>
 public partial class FrmMisReservas : Form, IObservadorIdioma
 {
-    private readonly GestorReservas _gestorReservas = new();
-    private readonly GestorClientes _gestorClientes = new();
+    private readonly IGestorReservas _gestorReservas = new GestorReservas();
+    private readonly IGestorClientes _gestorClientes = new GestorClientes();
 
     public FrmMisReservas()
     {

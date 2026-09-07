@@ -9,8 +9,8 @@ namespace AutoVentas.UI.Formularios.PortalCliente;
 /// Desde acá el cliente puede iniciar una reserva sobre el vehículo seleccionado.</summary>
 public partial class FrmCatalogoVehiculos : Form, IObservadorIdioma
 {
-    private readonly GestorVehiculos _gestorVehiculos = new();
-    private readonly GestorClientes _gestorClientes = new();
+    private readonly IGestorVehiculos _gestorVehiculos = new GestorVehiculos();
+    private readonly IGestorClientes _gestorClientes = new GestorClientes();
     private List<Vehiculo> _vehiculosDisponibles = new();
 
     public FrmCatalogoVehiculos()

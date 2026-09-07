@@ -8,7 +8,7 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 /// <summary>Gestión de Entregas (Ejecutivo). Una entrega &lt;&lt;include&gt;&gt; la gestión de pagos.</summary>
 public partial class FrmEntregas : Form, IObservadorIdioma
 {
-    private readonly GestorEntregas _gestor = new();
+    private readonly IGestorEntregas _gestor = new GestorEntregas();
     private readonly ControladorListadoCrud<Entrega> _controlador;
 
     public FrmEntregas()

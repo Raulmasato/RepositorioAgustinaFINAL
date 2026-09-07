@@ -8,7 +8,7 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 /// <summary>Gestión de Reservas — CRUD completo a cargo del Ejecutivo.</summary>
 public partial class FrmReservas : Form, IObservadorIdioma
 {
-    private readonly GestorReservas _gestor = new();
+    private readonly IGestorReservas _gestor = new GestorReservas();
     private readonly ControladorListadoCrud<Reserva> _controlador;
 
     public FrmReservas()

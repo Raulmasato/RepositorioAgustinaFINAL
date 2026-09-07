@@ -7,7 +7,7 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 
 internal partial class FrmContratoEditar : Form, IObservadorIdioma
 {
-    private readonly GestorContratos _gestor = new();
+    private readonly IGestorContratos _gestor = new GestorContratos();
     private readonly Contrato? _original;
 
     public FrmContratoEditar(Contrato? contrato)

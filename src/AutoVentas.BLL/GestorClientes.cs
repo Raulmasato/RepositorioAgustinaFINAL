@@ -6,7 +6,7 @@ using AutoVentas.Services.Seguridad;
 namespace AutoVentas.BLL;
 
 /// <summary>Gestión de Clientes (Vendedor). El DNI se guarda encriptado (T03) por ser un dato sensible.</summary>
-public class GestorClientes : GestorNegocioBase<Cliente>
+public class GestorClientes : GestorNegocioBase<Cliente>, IGestorClientes
 {
     public GestorClientes() : base(new RepositorioClientes(), "Clientes") { }
 

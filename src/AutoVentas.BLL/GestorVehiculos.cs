@@ -5,7 +5,7 @@ using AutoVentas.Domain.Excepciones;
 namespace AutoVentas.BLL;
 
 /// <summary>Gestión de Vehículos (Vendedor: alta de inventario, consultado por Ejecutivo/Cliente).</summary>
-public class GestorVehiculos : GestorNegocioBase<Vehiculo>
+public class GestorVehiculos : GestorNegocioBase<Vehiculo>, IGestorVehiculos
 {
     public GestorVehiculos() : base(new RepositorioVehiculos(), "Vehiculos") { }
 

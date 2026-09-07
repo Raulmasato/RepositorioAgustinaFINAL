@@ -7,7 +7,7 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 
 internal partial class FrmEntregaEditar : Form, IObservadorIdioma
 {
-    private readonly GestorEntregas _gestor = new();
+    private readonly IGestorEntregas _gestor = new GestorEntregas();
     private readonly Entrega? _original;
 
     public FrmEntregaEditar(Entrega? entrega)

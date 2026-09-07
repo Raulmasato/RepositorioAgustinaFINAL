@@ -8,7 +8,7 @@ namespace AutoVentas.UI.Formularios.Vendedor;
 /// <summary>Gestión de Presupuestos (Vendedor). Un presupuesto aprobado puede dar origen a un Contrato.</summary>
 public partial class FrmPresupuestos : Form, IObservadorIdioma
 {
-    private readonly GestorPresupuestos _gestor = new();
+    private readonly IGestorPresupuestos _gestor = new GestorPresupuestos();
     private readonly ControladorListadoCrud<Presupuesto> _controlador;
 
     public FrmPresupuestos()

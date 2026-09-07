@@ -5,7 +5,7 @@ using AutoVentas.Domain.Excepciones;
 namespace AutoVentas.BLL;
 
 /// <summary>Gestión de Entregas (Ejecutivo). Una entrega &lt;&lt;include&gt;&gt; la gestión de pagos.</summary>
-public class GestorEntregas : GestorNegocioBase<Entrega>
+public class GestorEntregas : GestorNegocioBase<Entrega>, IGestorEntregas
 {
     public GestorEntregas() : base(new RepositorioEntregas(), "Entregas") { }
 

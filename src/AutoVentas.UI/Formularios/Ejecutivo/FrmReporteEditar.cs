@@ -7,7 +7,7 @@ namespace AutoVentas.UI.Formularios.Ejecutivo;
 
 internal partial class FrmReporteEditar : Form, IObservadorIdioma
 {
-    private readonly GestorReportes _gestor = new();
+    private readonly IGestorReportes _gestor = new GestorReportes();
     private readonly Reporte? _original;
 
     public FrmReporteEditar(Reporte? reporte)
