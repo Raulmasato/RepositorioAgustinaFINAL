@@ -146,8 +146,7 @@ DECLARE @it INT = (SELECT IdIdioma FROM Idiomas WHERE Codigo = 'it');
         ('btn.exportarpdf', N'Exportar a PDF', N'Export to PDF', N'Exportar para PDF', N'Exporter en PDF', N'Als PDF exportieren', N'Esporta in PDF'),
         ('msg.seleccionereporte', N'Debe seleccionar un reporte de la lista.', N'You must select a report from the list.', N'Selecione um relatório da lista.', N'Vous devez sélectionner un rapport dans la liste.', N'Sie müssen einen Bericht aus der Liste auswählen.', N'Devi selezionare un rapporto dall''elenco.'),
         ('msg.pdfgenerado', N'El PDF se generó correctamente.', N'The PDF was generated successfully.', N'O PDF foi gerado com sucesso.', N'Le PDF a été généré avec succès.', N'Das PDF wurde erfolgreich erstellt.', N'Il PDF è stato generato correttamente.'),
-        ('menu.ayuda', N'Ayuda', N'Help', N'Ajuda', N'Aide', N'Hilfe', N'Aiuto'),
-        ('lbl.buscarvehiculo', N'Buscar (marca o modelo)', N'Search (brand or model)', N'Buscar (marca ou modelo)', N'Rechercher (marque ou modèle)', N'Suche (Marke oder Modell)', N'Cerca (marca o modello)')
+        ('menu.ayuda', N'Ayuda', N'Help', N'Ajuda', N'Aide', N'Hilfe', N'Aiuto')
     ) AS t(Clave, Es, En, Pt, Fr, De, It)
 )
 MERGE Traducciones AS destino

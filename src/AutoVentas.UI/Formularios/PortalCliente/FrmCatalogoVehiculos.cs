@@ -73,7 +73,7 @@ public partial class FrmCatalogoVehiculos : Form, IObservadorIdioma
     {
         var t = GestorIdioma.Instancia;
         Text = t.Traducir("menu.vehiculos");
-        _lblBuscar.Text = t.Traducir("lbl.buscarvehiculo");
+        _lblBuscar.Text = t.Traducir("btn.buscar");
         _btnReservar.Text = t.Traducir("btn.reservar");
     }
 }

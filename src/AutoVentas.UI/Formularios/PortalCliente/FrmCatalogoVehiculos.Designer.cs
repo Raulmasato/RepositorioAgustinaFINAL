@@ -67,7 +67,7 @@ namespace AutoVentas.UI.Formularios.PortalCliente
             this._lblBuscar.Name = "_lblBuscar";
             this._lblBuscar.Size = new System.Drawing.Size(140, 23);
             this._lblBuscar.TabIndex = 0;
-            this._lblBuscar.Text = "Buscar (marca o modelo)";
+            this._lblBuscar.Text = "Buscar";
             //
             // _txtBuscar
             //

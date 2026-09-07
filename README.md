@@ -22,8 +22,6 @@ database/
                             sola vez (idiomas, permisos, columnas de Reportes y las
                             84 claves de traducción x 6 idiomas). Recomendado si no
                             estás seguro de cuáles de los scripts anteriores corriste.
-  08_agregar_busqueda_catalogo.sql        Solo si la BD ya existía antes de agregar
-                            el cuadro de búsqueda del catálogo de vehículos (idempotente)
 
 instalador/
   Instalar.ps1             A01 — instalador automático (ver docs/Manual_Instalacion.md)
