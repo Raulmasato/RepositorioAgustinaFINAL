@@ -85,7 +85,15 @@ public partial class FrmIdiomas : Form, IObservadorIdioma
             {
                 var clave = Convert.ToString(fila.Cells["Clave"].Value) ?? string.Empty;
                 var valor = Convert.ToString(fila.Cells["Valor"].Value) ?? string.Empty;
-                if (string.IsNullOrWhiteSpace(clave)) continue;
+
+                // Las claves que todavía no se tradujeron para este idioma aparecen en la
+                // grilla con el valor en blanco (para que el administrador vea qué falta
+                // completar); si se guardaran tal cual, quedaría un texto vacío pisando
+                // cualquier leyenda de esa pantalla y el idioma se rompería por completo.
+                // Se las deja sin guardar: así GestorIdioma.Traducir() sigue devolviendo la
+                // clave (ej. "btn.guardar") en vez de un control totalmente en blanco.
+                if (string.IsNullOrWhiteSpace(clave) || string.IsNullOrWhiteSpace(valor)) continue;
+
                 _repositorio.GuardarTraduccion(idioma.IdIdioma, clave, valor);
             }
 

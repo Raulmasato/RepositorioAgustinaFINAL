@@ -47,8 +47,11 @@ public sealed class GestorIdioma
         NotificarObservadores();
     }
 
-    /// <summary>Traduce una clave; si no existe traducción, devuelve la clave misma como fallback visible.</summary>
-    public string Traducir(string clave) => _traducciones.TryGetValue(clave, out var valor) ? valor : clave;
+    /// <summary>Traduce una clave; si no existe traducción, o si el valor guardado está vacío
+    /// (por ejemplo, una leyenda que todavía no se completó para un idioma nuevo), devuelve la
+    /// clave misma como fallback visible en lugar de un control en blanco.</summary>
+    public string Traducir(string clave) =>
+        _traducciones.TryGetValue(clave, out var valor) && !string.IsNullOrWhiteSpace(valor) ? valor : clave;
 
     private void NotificarObservadores()
     {

@@ -108,6 +108,13 @@ aparecer en los combos de selección después de reiniciar la aplicación, porqu
 `GestorIdioma` carga la lista de idiomas disponibles una sola vez al arrancar. Dándolo de alta
 desde la pantalla de Idiomas esto no es un problema, porque ella misma refresca esa lista.
 
+**Un idioma recién creado no necesita tener todas las leyendas completas para poder
+seleccionarse.** La grilla de la pantalla de Idiomas muestra en blanco cada leyenda que
+todavía no se tradujo para ese idioma; al presionar Guardar, esas filas en blanco se ignoran
+(no se guardan como texto vacío) y, mientras no se completen, el sistema muestra la clave
+interna (por ejemplo `btn.guardar`) en lugar de un botón o etiqueta vacíos. Así se puede armar
+un idioma nuevo de a poco, traduciendo unas pocas leyendas por vez.
+
 ## Historial de cambios (T06b)
 
 Menú Ejecutivo → **Historial de cambios**: elegir la tabla (por ejemplo `Vehiculos`, `Clientes`
